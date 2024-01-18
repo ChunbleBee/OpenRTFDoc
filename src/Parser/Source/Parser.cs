@@ -3,13 +3,13 @@ namespace Parser;
 using System.Text;
 using RtfModels;
 
-public class Parser
+public static class Parser
 {
     private static readonly int EOF = -1;
-    public static Group ParseIntoGroups(StreamReader strm)
+    public static Group ParseIntoGroups(ref StreamReader strm)
     {
         Stack<Group> groups = new();
-        Group? document = null;
+        groups.Push(new Group());
         char prev, ch;
 
         for(int next; (next = strm.Read()) != EOF; prev = ch)
@@ -18,7 +18,7 @@ public class Parser
 
             if (ch == '\\')
             {
-                ControlWord word = ParseControlWord(strm);
+                ControlWord word = ParseControlWord(ref strm);
                 groups.Peek().Children.Add(word);
             }
             else if (ch == '{')
@@ -27,43 +27,31 @@ public class Parser
             }
             else if (ch == '}')
             {
-                if (groups.Count == 0)
+                if (groups.Count <= 1)
                 {
                     throw new FormatException("Group Underflow");
                 }
 
                 Group last = groups.Pop();
-                if (groups.Count == 0)
-                {
-                    document = last;
-                }
-                else
-                {
-                    groups.Peek().Children.Add(last);
-                }
-
+                groups.Peek().Children.Add(last);
             }
-            else if (ch == '\r' || ch == '\n')
+            else if (char.IsWhiteSpace(ch))
             {
-                // Pass on CRLF
+                // Pass on CR, LF, and other whitespace characters.
                 continue;
             }
             else
             {
-
-                groups.Peek().Children.Add(new Run()
-                {
-                    InnerText = ParseText(strm)
-                });
+                groups.Peek().Children.Add(ParseText(ref strm, ch));
             }
         }
 
-        if (groups.Count > 0)
+        if (groups.Count > 1)
         {
             throw new FormatException("Group Overflow");
         }
 
-        return document!;
+        return groups.Pop();
     }
 
     /// <summary>
@@ -73,32 +61,30 @@ public class Parser
     /// <param name="strm">The <see cref="StreamReader"/> containing the RTF text.</param>
     /// <returns>The parsed <see cref="ControlWord"/>.</returns>
     /// <exception cref="FormatException">Thrown if the control word does not follow the RTF spec.</exception>
-    public static ControlWord ParseControlWord(StreamReader strm)
+    public static ControlWord ParseControlWord(ref StreamReader strm)
     {
         StringBuilder builder = new();
         StringBuilder param = new();
-
-        char ch;
 
         // Control word format (generally):
         // r"\\[A-Za-z]+(-?[0-9]+)?"
         for (int next; (next = strm.Peek()) != EOF; strm.Read())
         {
-            ch = (char)next;
+            char ch = (char)next;
 
             // If the character is a special character.
             if (IsSpecialCharacter(ch))
             {
                 if (builder.Length != 0)
                 {
-                    // Break if another control word is found.
-                    if (ch == '\\') break;
+                    // Break if another control word or group delimiter is found.
+                    if (ch == '\\' || ch == '{' || ch == '}' || char.IsWhiteSpace(ch)) break;
 
                     // Deal with the minus char special case later.
                     if (ch != '-')
                     {
                         // Otherwise, throw a format error.
-                        throw new FormatException();
+                        throw new FormatException($"invalid character: {ch}, built value: {builder.ToString()}");
                     }
                 }
 
@@ -122,12 +108,6 @@ public class Parser
                         }
                     }
                 }
-                // CR/LF special case.
-                else if (ch == '\r' || ch == '\n')
-                {
-                    builder.Append("par");
-                }
-                // Minus/- special case.
                 else if (ch == '-')
                 {
                     if (builder.Length == 0)
@@ -174,7 +154,31 @@ public class Parser
             }
         }
 
-        return ControlWordMapper.GetControlWord(builder.ToString());
+        if (builder.Length == 0)
+        {
+            throw new FormatException();
+        }
+
+        return ControlWordMapper.GetControlWord(builder.ToString(), param.Length > 0 ? param.ToString() : null);
+    }
+
+    public static Run ParseText(ref StreamReader strm, char? start = null)
+    {
+        StringBuilder builder = new();
+        if (start != null) 
+        {
+            builder.Append(start);
+        }
+
+        for (int next; (next = strm.Peek()) != EOF; strm.Read())
+        {
+            char ch = (char)next;
+            if (IsControlDelimiter(ch)) break;
+
+            builder.Append(ch);
+        }
+
+        return new Run(builder.ToString());
     }
 
     private static bool IsSpecialCharacter(char ch)
@@ -197,8 +201,8 @@ public class Parser
         };
     }
 
-    public static string ParseText(StreamReader strm)
+    private static bool IsControlDelimiter(char ch)
     {
-        throw new NotImplementedException();
+        return ch == '\\' || ch == '{' || ch == '}' || ch == '\r' || ch == '\n';
     }
 }

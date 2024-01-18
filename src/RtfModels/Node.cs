@@ -3,85 +3,79 @@ namespace RtfModels;
 /// <summary>
 /// ControlWord describes any control word token.
 /// </summary>
-public abstract class ControlWord
+/// <remarks>
+/// Initializes a new instance of the <see cref="ControlWord"/> class.
+/// </remarks>
+/// <param name="type">The <see cref="WordType"/> of this object.</param>
+/// <param name="name">The RTF string name of the control word.</param>
+public class ControlWord(WordType type, string name = "", string? param = null)
 {
     /// <summary>
     /// Gets the <see cref="WordType"/> associated with this control word.
     /// </summary>
-    public WordType Type { get; protected set; }
+    public WordType Type { get; protected set; } = type;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ControlWord"/> class.
-    /// </summary>
-    /// <param name="type">The <see cref="WordType"/> of this object.</param>
-    public ControlWord(WordType type)
-    {
-        Type = type;
-    }
+    public string Name { get; protected set; } = name;
+
+    public string Param { get; set; } = param;
 }
 
 /// <summary>
 /// SymbolWord describes a symbol type control word.
 /// </summary>
-public class SymbolWord : ControlWord
+/// <remarks>
+/// Initializes a new instance of the <see cref="SymbolWord"/> class.
+/// </remarks>
+public class SymbolWord(string name = "") : ControlWord(WordType.Symbol, name)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SymbolWord"/> class.
-    /// </summary>
-    public SymbolWord() : base(WordType.Symbol) { }
 }
 
 /// <summary>
 /// FlagWord describes a flag type control word.
 /// </summary>
-public class FlagWord : ControlWord
+/// <remarks>
+/// Initializes a new instance of the <see cref="FlagWord"/> class.
+/// </remarks>
+public class FlagWord(string name = "") : ControlWord(WordType.Flag, name)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FlagWord"/> class.
-    /// </summary>
-    public FlagWord() : base(WordType.Flag) { }
 }
 
 /// <summary>
 /// ValueWord describes a value type control word.
 /// </summary>
-public class ValueWord : ControlWord
+/// <remarks>
+/// Initializes a new instance of the <see cref="ValueWord"/> class.
+/// </remarks>
+public class ValueWord(string name = "", string param = "") : ControlWord(WordType.Value, name, param)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ValueWord"/> class.
-    /// </summary>
-    public ValueWord() : base(WordType.Value) { }
 }
 
 /// <summary>
 /// ToggleWord describes a toggle type control word.
 /// </summary>
-public class ToggleWord : ControlWord
+/// <remarks>
+/// Initializes a new instance of the <see cref="ToggleWord"/> class.
+/// </remarks>
+public class ToggleWord(string name = "", string? param = null) : ControlWord(WordType.Toggle, name, param)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ToggleWord"/> class.
-    /// </summary>
-    public ToggleWord() : base(WordType.Toggle) { }
 }
 
 /// <summary>
 /// DestinationWord describes a destination or group type control word.
 /// </summary>
-public class DestinationWord : ControlWord
+/// <remarks>
+/// Initializes a new instance of the <see cref="DestinationWord"/> class.
+/// </remarks>
+public class DestinationWord(string name = "", string? param = null) : ControlWord(WordType.Destination, name, param)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DestinationWord"/> class.
-    /// </summary>
-    public DestinationWord() : base(WordType.Destination) { }
 }
 
 /// <summary>
-/// UnknownWord describes a unknown type control word.
+///TextnWord describes a plain text run.
 /// </summary>
-public class UnknownWord : ControlWord
+/// <remarks>
+/// Initializes a new instance of the <see cref="TextWord"/> class.
+/// </remarks>
+public class TextWord(string text) : ControlWord(WordType.Text, "", text)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UnknownWord"/> class.
-    /// </summary>
-    public UnknownWord() : base(WordType.Unknown) { }
 }

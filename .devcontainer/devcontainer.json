@@ -35,5 +35,5 @@
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 
-	"postAttachCommand": "dotnet sln add $(ls -r **/*.csproj)"
+	"postAttachCommand": "rm OpenRTFDoc.sln; dotnet new sln; dotnet sln add $(find . -type f -name *.csproj)"
 }

@@ -7,9 +7,9 @@
 public enum WordType
 {
     /// <summary>
-    /// Unknown represents an unknown control word.
+    /// Text represents either plain text or an unknown control word.
     /// </summary>
-    Unknown,
+    Text,
 
     /// <summary>
     /// Symbol represents special characters.
