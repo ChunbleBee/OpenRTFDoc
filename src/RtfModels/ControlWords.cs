@@ -107,11 +107,17 @@ public class TextWord(string text) : ControlWord(WordType.Text, "", text)
 }
 
 /// <summary>
-/// TextDecoratorToggleWord describes a simple text decorator toggle.
+/// BinaryToggleWord describes a toggle <see cref="ControlWord"/> that can only be on or off.
 /// </summary>
-/// <param name="name">The name of the decorator.</param>
+/// <param name="name">The name of the word.</param>
 /// <param name="param">The parameter of the control word, if any.</param>
-public class TextDecoratorToggleWord(string name = "", string? param = null) : ToggleWord(name, param)
+public class BinaryToggleWord : ToggleWord
 {
-    
+    public BinaryToggleWord(string name = "", string? param = null) : base(name, param)
+    {
+        if (param != null && param != "0")
+        {
+            throw new FormatException($"parameter should either be null or 0, actual: {param}");
+        }
+    }
 }
