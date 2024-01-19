@@ -12,7 +12,10 @@
                 "streetsidesoftware.code-spell-checker",
                 "redhat.vscode-xml",
 				"tomoki1207.pdf"
-			]
+			],
+            "settings": {
+                "editor.formatOnSave": true
+            }
 		}
 	},
 
