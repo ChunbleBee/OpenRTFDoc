@@ -111,13 +111,6 @@ public class TextWord(string text) : ControlWord(WordType.Text, "", text)
 /// </summary>
 /// <param name="name">The name of the word.</param>
 /// <param name="param">The parameter of the control word, if any.</param>
-public class BinaryToggleWord : ToggleWord
+public class BinaryToggleWord(string name = "", string? param = null) : ToggleWord(name, (param != "0") ? null : param)
 {
-    public BinaryToggleWord(string name = "", string? param = null) : base(name, param)
-    {
-        if (param != null && param != "0")
-        {
-            throw new FormatException($"parameter should either be null or 0, actual: {param}");
-        }
-    }
 }
