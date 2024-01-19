@@ -121,49 +121,61 @@ public class Tests
             new(string.Empty, typeof(Run), ";"),
         };
 
-        Group doc = default;
-        Assert.DoesNotThrow(() => { doc = Parser.Parse(rtfstr);});
+        Group doc = new();
+        Assert.DoesNotThrow(
+            () => { doc = Parser.Parse(rtfstr); }
+        );
 
-        TestContext.WriteLine($"Returned RTF String: {doc.ToString()}");
+        TestContext.WriteLine($"Returned RTF String: {doc}");
         TestContext.Write($"Children: [");
-        foreach (var child in doc.Children)
+        foreach (var child in doc!.Children)
         {
             TestContext.Write($"{child}-{child.Name}, ");
         }
         TestContext.WriteLine("]");
 
-        Assert.That(doc.Children.Count, Is.EqualTo(17));
+        Assert.That(doc.Children, Has.Count.EqualTo(17));
 
         // Test direct children correctly parsed
         for(int i = 0; i < doc.Children.Count; i++)
         {
             TestContext.WriteLine($"Testing Outer Doc #{i + 1}: {doc.Children[i].GetType()}-{doc.Children[i].Name}");
-            Assert.That(doc.Children[i].Name, Is.EqualTo(expectedDocChildren[i].Item1));
-            Assert.That(doc.Children[i].GetType(), Is.EqualTo(expectedDocChildren[i].Item2));
-            Assert.That(doc.Children[i].Param, Is.EqualTo(expectedDocChildren[i].Item3));
+            Assert.Multiple(() =>
+            {
+                Assert.That(doc.Children[i].Name, Is.EqualTo(expectedDocChildren[i].Item1));
+                Assert.That(doc.Children[i].GetType(), Is.EqualTo(expectedDocChildren[i].Item2));
+                Assert.That(doc.Children[i].Param, Is.EqualTo(expectedDocChildren[i].Item3));
+            });
         }
 
         // Test embedded group parsing
         Group fonttbl = (Group)doc.Children[3];
-        Assert.That(fonttbl.Children.Count, Is.EqualTo(4));
-        Assert.That(fonttbl.Children[0].Name, Is.EqualTo("fonttbl"));
-        Assert.That(fonttbl.Children[0].GetType(), Is.EqualTo(typeof(DestinationWord)));
-        Assert.That(fonttbl.Children[0].Param, Is.EqualTo(null));
+        Assert.That(fonttbl.Children, Has.Count.EqualTo(4));
+        Assert.Multiple(() =>
+        {
+            Assert.That(fonttbl.Children[0].Name, Is.EqualTo("fonttbl"));
+            Assert.That(fonttbl.Children[0].GetType(), Is.EqualTo(typeof(DestinationWord)));
+            Assert.That(fonttbl.Children[0].Param, Is.EqualTo(null));
+        });
 
-        for(int i = 1; i < fonttbl.Children.Count; i++)
+        for (int i = 1; i < fonttbl.Children.Count; i++)
         {
             TestContext.WriteLine($"Testing Font Table Group #{i}");
             Assert.That(fonttbl.Children[i].GetType(), Is.EqualTo(typeof(Group)));
             Group fgroup = (Group)fonttbl.Children[i];
 
-            Assert.That(fgroup.Children.Count, Is.EqualTo(3));
+            Assert.That(fgroup.Children, Has.Count.EqualTo(3));
             for(int j = 0; j < fgroup.Children.Count; j++)
             {
                 var actualChild = fgroup.Children[j];
                 var expectedChild = expectedFtblChildren[i - 1, j];
-                Assert.That(actualChild.Name, Is.EqualTo(expectedChild.Item1));
-                Assert.That(actualChild.GetType(), Is.EqualTo(expectedChild.Item2));
-                Assert.That(actualChild.Param, Is.EqualTo(expectedChild.Item3));
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(actualChild.Name, Is.EqualTo(expectedChild.Item1));
+                    Assert.That(actualChild.GetType(), Is.EqualTo(expectedChild.Item2));
+                    Assert.That(actualChild.Param, Is.EqualTo(expectedChild.Item3));
+                });
             }
         }
 
@@ -174,9 +186,12 @@ public class Tests
             var expectedChild = expectedClrTbl[i];
     
             TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}-{actualChild.Name}: {actualChild.Param}");
-            Assert.That(actualChild.Name, Is.EqualTo(expectedChild.Item1));
-            Assert.That(actualChild.GetType(), Is.EqualTo(expectedChild.Item2));
-            Assert.That(actualChild.Param, Is.EqualTo(expectedChild.Item3));
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualChild.Name, Is.EqualTo(expectedChild.Item1));
+                Assert.That(actualChild.GetType(), Is.EqualTo(expectedChild.Item2));
+                Assert.That(actualChild.Param, Is.EqualTo(expectedChild.Item3));
+            });
         }
     }
 }
