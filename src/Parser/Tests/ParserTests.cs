@@ -129,6 +129,14 @@ public class Tests
         Assert.IsTrue(document.Children[0] is Group);
 
         Group innerdoc = (Group)document.Children[0];
+        TestContext.WriteLine($"Returned RTF String: {innerdoc.ToString()}");
+        TestContext.Write($"Children: [");
+        foreach (var child in innerdoc.Children)
+        {
+            TestContext.Write($"{child}-{child.Name}, ");
+        }
+        TestContext.WriteLine("]");
+
         Assert.That(innerdoc.Children.Count, Is.EqualTo(17));
 
         // Test direct children correctly parsed

@@ -1,5 +1,7 @@
 namespace RtfModels;
 
+using System.Text;
+
 /// <summary>
 /// ControlWord describes any control word token.
 /// </summary>
@@ -15,9 +17,28 @@ public class ControlWord(WordType type, string name = "", string? param = null)
     /// </summary>
     public WordType Type { get; protected set; } = type;
 
+    /// <summary>
+    /// Gets the rtf name of this control word.
+    /// </summary>
     public string Name { get; protected set; } = name;
 
+    /// <summary>
+    /// Gets the parameter of this control word.
+    /// </summary>
     public string Param { get; set; } = param;
+
+    /// <summary>
+    /// ToString gets the RTF string representation of this control word.
+    /// </summary>
+    /// <returns>The string representation of this control word.</returns>
+    public virtual string ToString()
+    {
+        StringBuilder builder = new();
+        builder.Append('\\');
+        builder.Append(Name);
+        builder.Append(Param);
+        return builder.ToString();
+    }
 }
 
 /// <summary>
@@ -78,4 +99,9 @@ public class DestinationWord(string name = "", string? param = null) : ControlWo
 /// </remarks>
 public class TextWord(string text) : ControlWord(WordType.Text, "", text)
 {
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return ((Param[0] != ';') ? " " : string.Empty) + Param;
+    }
 }
