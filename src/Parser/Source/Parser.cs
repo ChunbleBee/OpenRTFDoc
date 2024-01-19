@@ -8,6 +8,36 @@ public static class Parser
     private static readonly int EOF = -1;
 
     /// <summary>
+    /// Parse attempts to parse the given string into <see cref="ControlWord"/> nodes.
+    /// </summary>
+    /// <param name="str">the string to parse.</param>
+    /// <returns>The document root <see cref="Group"/> node.</returns>
+    public static Group Parse(string str)
+    {
+        return Parse(new MemoryStream(Encoding.ASCII.GetBytes(str)));
+    }
+
+    /// <summary>
+    /// Parse attempts to parse the given stream into <see cref="ControlWord"/> nodes.
+    /// </summary>
+    /// <param name="strm">The <see cref="Stream"/> to read from.</param>
+    /// <returns>The document root <see cref="Group"/> node.</returns>
+    public static Group Parse(Stream strm)
+    {
+        return Parse(new StreamReader(strm));
+    }
+
+    /// <summary>
+    /// Parse attempts to parse the given stream into <see cref="ControlWord"/> nodes.
+    /// </summary>
+    /// <param name="strm">The <see cref="StreamReader"/> to read from.</param>
+    /// <returns>The document root <see cref="Group"/> node.</returns>
+    public static Group Parse(StreamReader strm)
+    {
+        return ParseIntoGroups(ref strm);
+    }
+
+    /// <summary>
     /// ParseIntoGroups parses the given stream into group tokens.
     /// </summary>
     /// <param name="strm">The <see cref="StreamReader"/> to consume.</param>
@@ -86,7 +116,7 @@ public static class Parser
     /// ParseControlWord parses out the next control word in the stream.
     /// See <i>Microsoft®️ Office Rich Text Format (RTF) Specification Version 1.9.1</i>, page 11, 143
     /// </summary>
-    /// <param name="strm">The <see cref="StreamReader"/> containing the RTF text.</param>
+    /// <param name="strm">The <see cref="StreamReader"/> to consume.</param>
     /// <returns>The parsed <see cref="ControlWord"/>.</returns>
     /// <exception cref="FormatException">Thrown if the control word does not follow the RTF spec.</exception>
     public static ControlWord ParseControlWord(ref StreamReader strm)
@@ -190,6 +220,12 @@ public static class Parser
         return ControlWordMapper.GetControlWord(builder.ToString(), param.Length > 0 ? param.ToString() : null);
     }
 
+    /// <summary>
+    /// ParseText parses out the next run of plain text from the stream.
+    /// </summary>
+    /// <param name="strm">The <see cref="StreamReader"/> to consume.</param>
+    /// <param name="start">Optional character to append to the builder.</param>
+    /// <returns>The <see cref="Run"/> of plain text.</returns>
     public static Run ParseText(ref StreamReader strm, char? start = null)
     {
         StringBuilder builder = new();

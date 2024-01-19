@@ -122,9 +122,7 @@ public class Tests
         };
 
         Group doc = default;
-        MemoryStream strm = new(Encoding.ASCII.GetBytes(rtfstr));
-        StreamReader reader = new(strm);
-        Assert.DoesNotThrow(() => {doc = Parser.ParseIntoGroups(ref reader);});
+        Assert.DoesNotThrow(() => { doc = Parser.Parse(rtfstr);});
 
         TestContext.WriteLine($"Returned RTF String: {doc.ToString()}");
         TestContext.Write($"Children: [");
