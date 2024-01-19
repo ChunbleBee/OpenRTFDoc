@@ -48,7 +48,7 @@ public class Tests
 
         Tuple<string, Type, string?>[] expectedDocChildren = {
             new("rtf", typeof(DestinationWord), "1"),
-            new("ansi", typeof(FlagWord), null),
+            new("ansi", typeof(AnsiWord), null),
             new("deff", typeof(ValueWord), "0"),
             new(string.Empty, typeof(Group), null),
             new(string.Empty, typeof(Group), null),

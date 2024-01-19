@@ -22,7 +22,7 @@ Because of some nuances in RTF parsing, this DOM will be flatter than many other
 * Toggles create a new child text node.
     * All other settings are maintained from the parent node.
 * Values create Attributes for the current node.
-
+* Symbols
 
 ## Converting from DOM into RTF Strings
 This process will not return a one to one plain text result, but should return the same _visual result_ in most RTF Readers.
