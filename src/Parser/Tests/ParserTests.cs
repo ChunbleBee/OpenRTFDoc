@@ -130,21 +130,37 @@ public class Tests
         TestContext.Write($"Children: [");
         foreach (var child in doc!.Children)
         {
-            TestContext.Write($"{child}-{child.Name}, ");
+            string childName = (child is ControlWord c) ? c.Name : "Token";
+            TestContext.Write($"{child.GetType()}, ");
         }
         TestContext.WriteLine("]");
 
         Assert.That(doc.Children, Has.Count.EqualTo(17));
 
         // Test direct children correctly parsed
-        for(int i = 0; i < doc.Children.Count; i++)
+        for (int i = 0; i < doc.Children.Count; i++)
         {
-            TestContext.WriteLine($"Testing Outer Doc #{i + 1}: {doc.Children[i].GetType()}-{doc.Children[i].Name}");
             Assert.Multiple(() =>
             {
-                Assert.That(doc.Children[i].Name, Is.EqualTo(expectedDocChildren[i].Item1));
-                Assert.That(doc.Children[i].GetType(), Is.EqualTo(expectedDocChildren[i].Item2));
-                Assert.That(doc.Children[i].Param, Is.EqualTo(expectedDocChildren[i].Item3));
+                IToken actualChild = doc.Children[i];
+                var expectedChild = expectedDocChildren[i];
+
+                Assert.That(actualChild.GetType(), Is.EqualTo(expectedChild.Item2));
+                if (actualChild is ControlWord c)
+                {
+                    TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}-{c.Name}: {c.Param}");
+                    Assert.That(c.Name, Is.EqualTo(expectedChild.Item1));
+                    Assert.That(c.Param, Is.EqualTo(expectedChild.Item3));
+                }
+                else if (actualChild is Run r)
+                {
+                    TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}: {r.InnerText}");
+                    Assert.That(r.InnerText, Is.EqualTo(expectedChild.Item3));
+                }
+                else if (actualChild is Group g)
+                {
+                    TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}, Children: {g.Children.Count}");
+                }
             });
         }
 
@@ -153,9 +169,9 @@ public class Tests
         Assert.That(fonttbl.Children, Has.Count.EqualTo(4));
         Assert.Multiple(() =>
         {
-            Assert.That(fonttbl.Children[0].Name, Is.EqualTo("fonttbl"));
             Assert.That(fonttbl.Children[0].GetType(), Is.EqualTo(typeof(DestinationWord)));
-            Assert.That(fonttbl.Children[0].Param, Is.EqualTo(null));
+            Assert.That(((DestinationWord)fonttbl.Children[0]).Name, Is.EqualTo("fonttbl"));
+            Assert.That(((DestinationWord)fonttbl.Children[0]).Param, Is.EqualTo(null));
         });
 
         for (int i = 1; i < fonttbl.Children.Count; i++)
@@ -165,16 +181,29 @@ public class Tests
             Group fgroup = (Group)fonttbl.Children[i];
 
             Assert.That(fgroup.Children, Has.Count.EqualTo(3));
-            for(int j = 0; j < fgroup.Children.Count; j++)
+            for (int j = 0; j < fgroup.Children.Count; j++)
             {
                 var actualChild = fgroup.Children[j];
                 var expectedChild = expectedFtblChildren[i - 1, j];
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(actualChild.Name, Is.EqualTo(expectedChild.Item1));
                     Assert.That(actualChild.GetType(), Is.EqualTo(expectedChild.Item2));
-                    Assert.That(actualChild.Param, Is.EqualTo(expectedChild.Item3));
+                    if (actualChild is ControlWord c)
+                    {
+                        TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}-{c.Name}: {c.Param}");
+                        Assert.That(c.Name, Is.EqualTo(expectedChild.Item1));
+                        Assert.That(c.Param, Is.EqualTo(expectedChild.Item3));
+                    }
+                    else if (actualChild is Run r)
+                    {
+                        TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}: {r.InnerText}");
+                        Assert.That(r.InnerText, Is.EqualTo(expectedChild.Item3));
+                    }
+                    else if (actualChild is Group g)
+                    {
+                        TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}, Children: {g.Children.Count}");
+                    }
                 });
             }
         }
@@ -184,13 +213,25 @@ public class Tests
         {
             var actualChild = colortbl.Children[i];
             var expectedChild = expectedClrTbl[i];
-    
-            TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}-{actualChild.Name}: {actualChild.Param}");
+
             Assert.Multiple(() =>
             {
-                Assert.That(actualChild.Name, Is.EqualTo(expectedChild.Item1));
                 Assert.That(actualChild.GetType(), Is.EqualTo(expectedChild.Item2));
-                Assert.That(actualChild.Param, Is.EqualTo(expectedChild.Item3));
+                if (actualChild is ControlWord c)
+                {
+                    TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}-{c.Name}: {c.Param}");
+                    Assert.That(c.Name, Is.EqualTo(expectedChild.Item1));
+                    Assert.That(c.Param, Is.EqualTo(expectedChild.Item3));
+                }
+                else if (actualChild is Run r)
+                {
+                    TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}: [{r.InnerText}]");
+                    Assert.That(r.InnerText, Is.EqualTo(expectedChild.Item3));
+                }
+                else if (actualChild is Group g)
+                {
+                    TestContext.WriteLine($"Testing Color Table #{i + 1}: {actualChild.GetType()}, Children: {g.Children.Count}");
+                }
             });
         }
     }

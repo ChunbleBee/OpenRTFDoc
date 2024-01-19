@@ -3,6 +3,13 @@ namespace RtfModels;
 using System.Text;
 
 /// <summary>
+/// Token is the base class for all control tokens in the parser
+/// </summary>
+public interface IToken
+{
+}
+
+/// <summary>
 /// ControlWord describes any control word token.
 /// </summary>
 /// <remarks>
@@ -10,7 +17,7 @@ using System.Text;
 /// </remarks>
 /// <param name="type">The <see cref="WordType"/> of this object.</param>
 /// <param name="name">The RTF string name of the control word.</param>
-public class ControlWord(WordType type, string name = "", string? param = null)
+public class ControlWord(WordType type, string name = "", string? param = null) : IToken
 {
     /// <summary>
     /// Gets the <see cref="WordType"/> associated with this control word.
@@ -99,11 +106,6 @@ public class DestinationWord(string name = "", string? param = null) : ControlWo
 /// </remarks>
 public class TextWord(string text) : ControlWord(WordType.Text, "", text)
 {
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return ((Param?[0] != ';') ? " " : string.Empty) + Param;
-    }
 }
 
 /// <summary>

@@ -7,21 +7,19 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-                "ms-dotnettools.csdevkit",
-                "ms-vscode.PowerShell",
-                "streetsidesoftware.code-spell-checker",
-                "redhat.vscode-xml",
+				"ms-dotnettools.csdevkit",
+				"ms-vscode.PowerShell",
+				"streetsidesoftware.code-spell-checker",
+				"redhat.vscode-xml",
 				"tomoki1207.pdf"
 			],
-            "settings": {
-                "editor.formatOnSave": true
-            }
+			"settings": {
+				"editor.formatOnSave": true
+			}
 		}
 	},
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [5000, 5001],
 	// "portsAttributes": {
@@ -29,15 +27,11 @@
 	//			"protocol": "https"
 	//		}
 	// }
-
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "dotnet restore",
-
 	// Configure tool-specific properties.
 	// "customizations": {},
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
-
-	"postAttachCommand": "dotnet sln add $(find . -type f -name *.csproj)"
+	"postAttachCommand": "dotnet sln add $(find . -type f -name *.csproj); dotnet restore"
 }
