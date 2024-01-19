@@ -121,103 +121,42 @@ public static class Parser
     /// <exception cref="FormatException">Thrown if the control word does not follow the RTF spec.</exception>
     public static ControlWord ParseControlWord(ref StreamReader strm)
     {
-        StringBuilder builder = new();
+        StringBuilder ctrl = new();
         StringBuilder param = new();
 
-        // Control word format (generally):
-        // r"\\[A-Za-z]+(-?[0-9]+)?"
+        // Control Symbols
+        if (strm.Peek() != EOF && IsSpecialCharacter((char)strm.Peek()))
+        {
+            ctrl.Append((char)strm.Read());
+        }
+        else
+        {
+            for (int next; (next = strm.Peek()) != EOF; strm.Read())
+            {
+                char ch = (char) next;
+                if (IsControlWordDelimiter(ch)) break;
+                ctrl.Append(ch);
+            }
+        }
+
+        if (strm.Peek() >= 0 && strm.Peek() == ' ')
+            strm.Read();
+        
         for (int next; (next = strm.Peek()) != EOF; strm.Read())
         {
             char ch = (char)next;
-
-            // If the character is a special character.
-            if (IsSpecialCharacter(ch))
+            if (ch == '-' && param.Length == 0)
             {
-                if (builder.Length != 0)
-                {
-                    // Break if another control word or group delimiter is found.
-                    if (ch == '\\' || ch == '{' || ch == '}' || char.IsWhiteSpace(ch)) break;
-
-                    // Deal with the minus char special case later.
-                    if (ch != '-')
-                    {
-                        // Otherwise, throw a format error.
-                        throw new FormatException($"invalid character: {ch}, built value: {builder.ToString()}");
-                    }
-                }
-
-                // Hex value control word.
-                if (ch == '\'')
-                {
-                    // Consume the current token
-                    strm.Read();
-
-                    // Consume the hex value tokens.
-                    for(int i = 0; i < 2; i++)
-                    {
-                        char val = (char)strm.Peek();
-                        if (char.IsAsciiHexDigit(val)) {
-                            builder.Append(val);
-                            if (i == 0) strm.Read();
-                        }
-                        else
-                        {
-                            throw new FormatException();
-                        }
-                    }
-                }
-                else if (ch == '-')
-                {
-                    if (builder.Length == 0)
-                    {
-                        builder.Append('-');
-                    }
-                    else if (param.Length == 0)
-                    {
-                        param.Append('-');
-                    }
-                    else
-                    {
-                        throw new FormatException();
-                    }
-                }
-                else
-                {
-                    builder.Append(ch);
-                }
-            }
-            // Add characters to control word
-            else if (char.IsLetter(ch))
-            {
-                if (param.Length > 0)
-                {
-                    throw new FormatException();
-                }
-
-                builder.Append(ch);
-            }
-            // Add values to parameter.
-            else if (char.IsDigit(ch))
-            {
-                if (builder.Length == 0)
-                {
-                    throw new FormatException();
-                }
-
+                // Append the character, and short-circuit.
                 param.Append(ch);
+                continue;
             }
-            else
-            {
-                break;
-            }
+
+            if (!char.IsAsciiDigit(ch)) break;
+            param.Append(ch);
         }
 
-        if (builder.Length == 0)
-        {
-            throw new FormatException();
-        }
-
-        return ControlWordMapper.GetControlWord(builder.ToString(), param.Length > 0 ? param.ToString() : null);
+        return ControlWordMapper.GetControlWord(ctrl.ToString(), param.Length > 0 ? param.ToString() : null);
     }
 
     /// <summary>
@@ -237,7 +176,7 @@ public static class Parser
         for (int next; (next = strm.Peek()) != EOF; strm.Read())
         {
             char ch = (char)next;
-            if (IsControlDelimiter(ch)) break;
+            if (IsControlWordBoundary(ch)) break;
 
             builder.Append(ch);
         }
@@ -265,8 +204,13 @@ public static class Parser
         };
     }
 
-    private static bool IsControlDelimiter(char ch)
+    private static bool IsControlWordBoundary(char ch)
     {
         return ch == '\\' || ch == '{' || ch == '}' || ch == '\r' || ch == '\n';
+    }
+
+    private static bool IsControlWordDelimiter(char ch)
+    {
+        return char.IsWhiteSpace(ch) || ch == '-' || char.IsDigit(ch) || !char.IsAsciiLetterOrDigit(ch);
     }
 }

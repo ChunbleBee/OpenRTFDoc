@@ -25,13 +25,13 @@ public class ControlWord(WordType type, string name = "", string? param = null)
     /// <summary>
     /// Gets the parameter of this control word.
     /// </summary>
-    public string Param { get; set; } = param;
+    public string? Param { get; set; } = param;
 
     /// <summary>
     /// ToString gets the RTF string representation of this control word.
     /// </summary>
     /// <returns>The string representation of this control word.</returns>
-    public virtual string ToString()
+    public override string ToString()
     {
         StringBuilder builder = new();
         builder.Append('\\');
@@ -92,7 +92,7 @@ public class DestinationWord(string name = "", string? param = null) : ControlWo
 }
 
 /// <summary>
-///TextnWord describes a plain text run.
+/// TextWord describes a plain text run.
 /// </summary>
 /// <remarks>
 /// Initializes a new instance of the <see cref="TextWord"/> class.
@@ -102,6 +102,16 @@ public class TextWord(string text) : ControlWord(WordType.Text, "", text)
     /// <inheritdoc/>
     public override string ToString()
     {
-        return ((Param[0] != ';') ? " " : string.Empty) + Param;
+        return ((Param?[0] != ';') ? " " : string.Empty) + Param;
     }
+}
+
+/// <summary>
+/// TextDecoratorToggleWord describes a simple text decorator toggle.
+/// </summary>
+/// <param name="name">The name of the decorator.</param>
+/// <param name="param">The parameter of the control word, if any.</param>
+public class TextDecoratorToggleWord(string name = "", string? param = null) : ToggleWord(name, param)
+{
+    
 }
