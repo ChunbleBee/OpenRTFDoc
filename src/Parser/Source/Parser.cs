@@ -6,10 +6,17 @@ using RtfModels;
 public static class Parser
 {
     private static readonly int EOF = -1;
+
+    /// <summary>
+    /// ParseIntoGroups parses the given stream into group tokens.
+    /// </summary>
+    /// <param name="strm">The <see cref="StreamReader"/> to consume.</param>
+    /// <returns>The <see cref="Group"/> that forms the document.</returns>
+    /// <exception cref="FormatException">Thrown if either there are group mismatches, or characters out of bounds.</exception>
     public static Group ParseIntoGroups(ref StreamReader strm)
     {
         Stack<Group> groups = new();
-        groups.Push(new Group());
+        Group? doc = null;
         char prev, ch;
 
         for(int next; (next = strm.Read()) != EOF; prev = ch)
@@ -19,6 +26,10 @@ public static class Parser
             if (ch == '\\')
             {
                 ControlWord word = ParseControlWord(ref strm);
+                if (!groups.TryPeek(out _))
+                {
+                    throw new FormatException("Tokens outside document bounds.");
+                }
                 groups.Peek().Children.Add(word);
             }
             else if (ch == '{')
@@ -27,13 +38,25 @@ public static class Parser
             }
             else if (ch == '}')
             {
-                if (groups.Count <= 1)
+                if (groups.Count == 0)
                 {
                     throw new FormatException("Group Underflow");
                 }
 
                 Group last = groups.Pop();
-                groups.Peek().Children.Add(last);
+                if (groups.Count > 0)
+                {
+                    groups.Peek().Children.Add(last);
+                }
+                else
+                {
+                    if (doc != null)
+                    {
+                        throw new FormatException("Multiple Document Groups");
+                    }
+
+                    doc = last;
+                }
             }
             else if (char.IsWhiteSpace(ch))
             {
@@ -42,16 +65,21 @@ public static class Parser
             }
             else
             {
+                if (!groups.TryPeek(out _))
+                {
+                    throw new FormatException("Tokens outside document bounds.");
+                }
+
                 groups.Peek().Children.Add(ParseText(ref strm, ch));
             }
         }
 
-        if (groups.Count > 1)
+        if (groups.Count > 0 || doc == null)
         {
             throw new FormatException("Group Overflow");
         }
 
-        return groups.Pop();
+        return doc;
     }
 
     /// <summary>

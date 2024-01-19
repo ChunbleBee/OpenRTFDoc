@@ -121,35 +121,32 @@ public class Tests
             new(string.Empty, typeof(Run), ";"),
         };
 
-        Group document = default;
+        Group doc = default;
         MemoryStream strm = new(Encoding.ASCII.GetBytes(rtfstr));
         StreamReader reader = new(strm);
-        Assert.DoesNotThrow(() => {document = Parser.ParseIntoGroups(ref reader);});
-        Assert.That(document.Children.Count, Is.EqualTo(1));
-        Assert.IsTrue(document.Children[0] is Group);
+        Assert.DoesNotThrow(() => {doc = Parser.ParseIntoGroups(ref reader);});
 
-        Group innerdoc = (Group)document.Children[0];
-        TestContext.WriteLine($"Returned RTF String: {innerdoc.ToString()}");
+        TestContext.WriteLine($"Returned RTF String: {doc.ToString()}");
         TestContext.Write($"Children: [");
-        foreach (var child in innerdoc.Children)
+        foreach (var child in doc.Children)
         {
             TestContext.Write($"{child}-{child.Name}, ");
         }
         TestContext.WriteLine("]");
 
-        Assert.That(innerdoc.Children.Count, Is.EqualTo(17));
+        Assert.That(doc.Children.Count, Is.EqualTo(17));
 
         // Test direct children correctly parsed
-        for(int i = 0; i < innerdoc.Children.Count; i++)
+        for(int i = 0; i < doc.Children.Count; i++)
         {
-            TestContext.WriteLine($"Testing Outer Doc #{i + 1}: {innerdoc.Children[i].GetType()}-{innerdoc.Children[i].Name}");
-            Assert.That(innerdoc.Children[i].Name, Is.EqualTo(expectedDocChildren[i].Item1));
-            Assert.That(innerdoc.Children[i].GetType(), Is.EqualTo(expectedDocChildren[i].Item2));
-            Assert.That(innerdoc.Children[i].Param, Is.EqualTo(expectedDocChildren[i].Item3));
+            TestContext.WriteLine($"Testing Outer Doc #{i + 1}: {doc.Children[i].GetType()}-{doc.Children[i].Name}");
+            Assert.That(doc.Children[i].Name, Is.EqualTo(expectedDocChildren[i].Item1));
+            Assert.That(doc.Children[i].GetType(), Is.EqualTo(expectedDocChildren[i].Item2));
+            Assert.That(doc.Children[i].Param, Is.EqualTo(expectedDocChildren[i].Item3));
         }
 
         // Test embedded group parsing
-        Group fonttbl = (Group)innerdoc.Children[3];
+        Group fonttbl = (Group)doc.Children[3];
         Assert.That(fonttbl.Children.Count, Is.EqualTo(4));
         Assert.That(fonttbl.Children[0].Name, Is.EqualTo("fonttbl"));
         Assert.That(fonttbl.Children[0].GetType(), Is.EqualTo(typeof(DestinationWord)));
@@ -172,7 +169,7 @@ public class Tests
             }
         }
 
-        Group colortbl = (Group)innerdoc.Children[4];
+        Group colortbl = (Group)doc.Children[4];
         for (int i = 0; i < colortbl.Children.Count; i++)
         {
             var actualChild = colortbl.Children[i];
