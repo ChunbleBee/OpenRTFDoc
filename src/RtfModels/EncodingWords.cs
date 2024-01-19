@@ -14,41 +14,26 @@ public interface EncodingWord
     public Encoding EncodingProvider { get; }
 }
 
-public abstract class EncodingFlagWord : FlagWord, EncodingWord
+/// <summary>
+/// Initializes a new instance of the <see cref="EncodingFlagWord"/> class.
+/// </summary>
+/// <param name="name">The name of this control word.</param>
+/// <param name="encoding">The <see cref="System.Text.Encoding"/> to use.</param>
+public abstract class EncodingFlagWord(string name = "", Encoding? encoding = null) : FlagWord(name), EncodingWord
 {
     /// <inheritdoc/>
-    public Encoding EncodingProvider { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EncodingFlagWord"/> class.
-    /// </summary>
-    /// <param name="name">The name of this control word.</param>
-    /// <param name="encoding">The <see cref="System.Text.Encoding"/> to use.</param>
-    public EncodingFlagWord(string name = "", Encoding? encoding = null) : base(name)
-    {
-        if (encoding == null)
-        {
-            encoding = Encoding.Default;
-        }
-
-        EncodingProvider = encoding;
-    }
+    public Encoding EncodingProvider { get; } = encoding ?? Encoding.Default;
 }
 
-public abstract class EncodingValueWord : ValueWord, EncodingWord
+/// <summary>
+/// Initializes a new instance of the <see cref="EncodingFlagWord"/> class.
+/// </summary>
+/// <param name="name">The name of this control word.</param>
+/// <param name="encoding">The parameter of the control word.</param>
+public abstract class EncodingValueWord(string name = "", string param = "") : ValueWord(name, param), EncodingWord
 {
     /// <inheritdoc/>
-    public Encoding EncodingProvider { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EncodingFlagWord"/> class.
-    /// </summary>
-    /// <param name="name">The name of this control word.</param>
-    /// <param name="encoding">The parameter of the control word.</param>
-    public EncodingValueWord(string name = "", string param = "") : base(name, param)
-    {
-        EncodingProvider = Encoding.GetEncoding(Int32.Parse(param));
-    }
+    public Encoding EncodingProvider { get; } = Encoding.GetEncoding(Int32.Parse(param));
 }
 
 /// <summary>

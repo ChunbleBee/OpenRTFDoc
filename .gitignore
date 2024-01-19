@@ -7,6 +7,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Solution is auto-built by extension, ignore it
+*.sln
+
 # User-specific files
 *.rsuser
 *.suo

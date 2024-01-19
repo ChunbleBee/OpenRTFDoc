@@ -1,6 +1,8 @@
 namespace RtfDom;
 
-public class DomBuilder
+using RtfModels;
+
+public static class DomBuilder
 {
     public static DocumentNode Build(Group doc)
     {
