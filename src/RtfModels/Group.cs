@@ -4,6 +4,27 @@ using System.Collections.Generic;
 using System.Text;
 
 /// <summary>
+/// GroupType represents what type of 
+/// </summary>
+public enum GroupType
+{
+    /// <summary>
+    ///  Default represents non-destination groups.
+    /// </summary>
+    Default,
+
+    /// <summary>
+    /// Local represents destination groups that apply to the next text run.
+    /// </summary>
+    Local,
+
+    /// <summary>
+    /// Global represents global destination groups (font tables, color tables, etc.)
+    /// </summary>
+    Global
+}
+
+/// <summary>
 /// Group defines any group of 
 /// </summary>
 public class Group : IToken
@@ -12,6 +33,8 @@ public class Group : IToken
     /// Gets the <see cref="IList"/> of children groups associated with this group.
     /// </summary>
     public IList<IToken> Children { get; } = [];
+
+    public GroupType Type { get; set; } = GroupType.Default;
 
     /// <inheritdoc/>
     public override string ToString()
@@ -27,12 +50,4 @@ public class Group : IToken
         builder.Append('}');
         return builder.ToString();
     }
-}
-
-/// <summary>
-/// DestinationGroup
-/// </summary>
-public class DestinationGroup : Group
-{
-
 }

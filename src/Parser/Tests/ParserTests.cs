@@ -63,7 +63,7 @@ public class Tests
             new("plain", typeof(FlagWord), null),
             new("fs", typeof(ValueWord), "20"),
             new(string.Empty, typeof(Run), "This is plain text."),
-            new("par", typeof(SymbolWord), null)
+            new("par", typeof(StringSymbolWord), null)
         };
 
         Tuple<string, Type, string?>[,] expectedFtblChildren = {

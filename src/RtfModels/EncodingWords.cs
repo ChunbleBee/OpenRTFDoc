@@ -6,7 +6,7 @@ using System.Text;
 /// EncodingWord describes an interface for <see cref="ControlWord"/>
 /// that alter the code pages of the document.
 /// </summary>
-public interface EncodingWord
+public interface IEncodingWord
 {
     /// <summary>
     /// Gets the current character encoding of the control word.
@@ -19,21 +19,30 @@ public interface EncodingWord
 /// </summary>
 /// <param name="name">The name of this control word.</param>
 /// <param name="encoding">The <see cref="System.Text.Encoding"/> to use.</param>
-public abstract class EncodingFlagWord(string name = "", Encoding? encoding = null) : FlagWord(name), EncodingWord
+public abstract class EncodingFlagWord(string name = "", Encoding? encoding = null) : DestinationWord(name, null, true), IEncodingWord
 {
     /// <inheritdoc/>
     public Encoding EncodingProvider { get; } = encoding ?? Encoding.Default;
 }
 
 /// <summary>
-/// Initializes a new instance of the <see cref="EncodingFlagWord"/> class.
+/// EncodingValueWord represents an encoding token.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="EncodingValuesWord"/> class.
+/// </remark>
 /// <param name="name">The name of this control word.</param>
 /// <param name="encoding">The parameter of the control word.</param>
-public abstract class EncodingValueWord(string name = "", string param = "") : ValueWord(name, param), EncodingWord
+public abstract class EncodingValueWord : DestinationWord, IEncodingWord
 {
     /// <inheritdoc/>
-    public Encoding EncodingProvider { get; } = Encoding.GetEncoding(Int32.Parse(param));
+    public Encoding EncodingProvider { get; }
+
+    public EncodingValueWord(string name = "", string param = "") : base(name, param, true)
+    {
+        EncodingProvider = Encoding.GetEncoding(Int32.Parse(param));
+        Type = WordType.Value & WordType.Destination;
+    }
 }
 
 /// <summary>

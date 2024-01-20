@@ -3,11 +3,9 @@ namespace RtfModels;
 using System.Text;
 
 /// <summary>
-/// Token is the base class for all control tokens in the parser
+/// IToken is the base interface for all control tokens in the parser
 /// </summary>
-public interface IToken
-{
-}
+public interface IToken { }
 
 /// <summary>
 /// ControlWord describes any control word token.
@@ -17,7 +15,7 @@ public interface IToken
 /// </remarks>
 /// <param name="type">The <see cref="WordType"/> of this object.</param>
 /// <param name="name">The RTF string name of the control word.</param>
-public class ControlWord(WordType type, string name = "", string? param = null) : IToken
+public class ControlWord(WordType type = WordType.UNKNOWN, string name = "", string? param = null) : IToken
 {
     /// <summary>
     /// Gets the <see cref="WordType"/> associated with this control word.
@@ -89,23 +87,17 @@ public class ToggleWord(string name = "", string? param = null) : ControlWord(Wo
 }
 
 /// <summary>
-/// DestinationWord describes a destination or group type control word.
+/// DestinationWord describes a destination type control word.
 /// </summary>
 /// <remarks>
 /// Initializes a new instance of the <see cref="DestinationWord"/> class.
 /// </remarks>
-public class DestinationWord(string name = "", string? param = null) : ControlWord(WordType.Destination, name, param)
+public class DestinationWord(string name = "", string? param = null, bool global = false) : ControlWord(WordType.Destination, name, param)
 {
-}
-
-/// <summary>
-/// TextWord describes a plain text run.
-/// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="TextWord"/> class.
-/// </remarks>
-public class TextWord(string text) : ControlWord(WordType.Text, "", text)
-{
+    /// <summary>
+    /// Gets a value that determines whether or not this destination control word is globally applied.
+    /// </summary>
+    public bool IsGlobal { get; } = global;
 }
 
 /// <summary>

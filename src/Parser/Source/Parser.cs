@@ -49,7 +49,7 @@ public static class Parser
         Group? doc = null;
         char prev, ch;
 
-        for(int next; (next = strm.Read()) != EOF; prev = ch)
+        for (int next; (next = strm.Read()) != EOF; prev = ch)
         {
             ch = (char)next;
 
@@ -61,6 +61,10 @@ public static class Parser
                     throw new FormatException("Tokens outside document bounds.");
                 }
                 groups.Peek().Children.Add(word);
+                if (groups.Peek().Type == GroupType.Default && word is DestinationWord dWord)
+                {
+                    groups.Peek().Type = dWord.IsGlobal ? GroupType.Global : GroupType.Local;
+                }
             }
             else if (ch == '{')
             {
@@ -133,7 +137,7 @@ public static class Parser
         {
             for (int next; (next = strm.Peek()) != EOF; strm.Read())
             {
-                char ch = (char) next;
+                char ch = (char)next;
                 if (IsControlWordDelimiter(ch)) break;
                 ctrl.Append(ch);
             }
@@ -141,7 +145,7 @@ public static class Parser
 
         if (strm.Peek() >= 0 && strm.Peek() == ' ')
             strm.Read();
-        
+
         for (int next; (next = strm.Peek()) != EOF; strm.Read())
         {
             char ch = (char)next;
@@ -168,7 +172,7 @@ public static class Parser
     public static Run ParseText(ref StreamReader strm, char? start = null)
     {
         StringBuilder builder = new();
-        if (start != null) 
+        if (start != null)
         {
             builder.Append(start);
         }
