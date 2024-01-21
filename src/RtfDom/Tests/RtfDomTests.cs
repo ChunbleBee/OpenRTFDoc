@@ -3,6 +3,7 @@ namespace RtfDomTests;
 using NUnit.Framework;
 using RtfDom;
 using RtfParser;
+using RtfModels;
 
 public class Tests
 {
@@ -44,6 +45,9 @@ public class Tests
             \widowctrl\ftnbj \sectd\linex0\endnhere \pard\plain \fs20 This is plain text.\par
         }";
 
-        Group docGroup = Parser.Parse(rtfStr);
+        Group? docGroup = null;
+        DocumentNode? docNode = null;
+        Assert.DoesNotThrow(() => { docGroup = Parser.Parse(rtfStr); });
+        Assert.DoesNotThrow(() => { documentNode = DomBuilder.Build(docGroup); })
     }
 }

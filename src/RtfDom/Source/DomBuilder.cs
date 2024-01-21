@@ -80,16 +80,19 @@ public static class DomBuilder
 
     private static FormatList ParseDestinationGroup(Group group)
     {
+        return new FormatList();
         throw new NotImplementedException();
     }
 
     private static FormatList BuildColorTable(Group group)
     {
+        return new FormatList();
         throw new NotImplementedException();
     }
 
     private static FormatList BuildFontTable(Group group)
     {
+        return new FormatList();
         throw new NotImplementedException();
     }
 }
