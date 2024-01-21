@@ -87,80 +87,80 @@ public class StringSymbolWord(string name, string value) : SymbolWord(name), ISt
     /// <summary>
     /// LineWord represents the paragraph break character in the RTF format.
     /// </summary>
-    public static StringSymbolWord LineWord = new("line", "\n");
+    public static StringSymbolWord LineWord { get; } = new("line", "\n");
 
     /// <summary>
     /// ParWord represents the paragraph break character in the RTF format.
     /// </summary>
-    public static StringSymbolWord ParagraphWord = new("par", "\u2029");
+    public static StringSymbolWord ParagraphWord { get; } = new("par", "\u2029");
 
     /// <summary>
     /// TabWord represents the tab character in the RTF format.
     /// </summary>
-    public static StringSymbolWord TabWord = new("tab", "\t");
+    public static StringSymbolWord TabWord { get; } = new("tab", "\t");
 
     /// <summary>
     /// EnDashWord represents the endash character in the RTF format.
     /// </summary>
-    public static StringSymbolWord EnDashWord = new("emdash", "\u2013");
+    public static StringSymbolWord EnDashWord { get; } = new("emdash", "\u2013");
 
     /// <summary>
     /// EmDashWord represents the emdash character in the RTF format.
     /// </summary>
-    public static StringSymbolWord EmDashWord = new("emdash", "\u2014");
+    public static StringSymbolWord EmDashWord { get; } = new("emdash", "\u2014");
 
     /// <summary>
     /// EnSpaceWord represents the enspace character in the RTF format.
     /// </summary>
-    public static StringSymbolWord EnSpaceWord = new("enspace", "\u2002");
+    public static StringSymbolWord EnSpaceWord { get; } = new("enspace", "\u2002");
 
     /// <summary>
     /// EmSpaceWord represents the emspace character in the RTF format.
     /// </summary>
-    public static StringSymbolWord EmSpaceWord = new("emspace", "\u2003");
+    public static StringSymbolWord EmSpaceWord { get; } = new("emspace", "\u2003");
 
     /// <summary>
     /// QuarterEmSpaceWord represents the four-per-em space character in the RTF format.
     /// </summary>
-    public static StringSymbolWord QuarterEmSpaceWord = new("qmspace", "\u2005");
+    public static StringSymbolWord QuarterEmSpaceWord { get; } = new("qmspace", "\u2005");
 
     /// <summary>
     /// BulletWord represents the bullet character in the RTF format.
     /// </summary>
-    public static StringSymbolWord BulletWord = new("bullet", "\u2022");
+    public static StringSymbolWord BulletWord { get; } = new("bullet", "\u2022");
 
     /// <summary>
     /// LeftQuoteWord represents the left-quote character in the RTF format.
     /// </summary>
-    public static StringSymbolWord LeftQuoteWord = new("lquote", "\u2029");
+    public static StringSymbolWord LeftQuoteWord { get; } = new("lquote", "\u2029");
 
     /// <summary>
     /// RightQuoteWord represents the right-quote character in the RTF format.
     /// </summary>
-    public static StringSymbolWord RightQuoteWord = new("rquote", "\u202A");
+    public static StringSymbolWord RightQuoteWord { get; } = new("rquote", "\u202A");
 
     /// <summary>
     /// LeftDoubleQuoteWord represents the left-double-quote character in the RTF format.
     /// </summary>
-    public static StringSymbolWord LeftDoubleQuoteWord = new("ldblquote", "\u201C");
+    public static StringSymbolWord LeftDoubleQuoteWord { get; } = new("ldblquote", "\u201C");
 
     /// <summary>
     /// RightDoubleQuoteWord represents the right-double-quote character in the RTF format.
     /// </summary>
-    public static StringSymbolWord RightDoubleQuoteWord = new("rdblquote", "\u201D");
+    public static StringSymbolWord RightDoubleQuoteWord { get; } = new("rdblquote", "\u201D");
 
     /// <summary>
     /// NonBreakingSpaceWord represents the non-break space character in the RTF format.
     /// </summary>
-    public static StringSymbolWord NonBreakingSpaceWord = new("~", "\u00A0");
+    public static StringSymbolWord NonBreakingSpaceWord { get; } = new("~", "\u00A0");
 
     /// <summary>
     /// OpenCurlyBraceWord represents the plain text open curly brace character.
     /// </summary>
-    public static StringSymbolWord OpenCurlyBraceWord = new("{", "{");
+    public static StringSymbolWord OpenCurlyBraceWord { get; } = new("{", "{");
 
     /// <summary>
     /// ClosingCurlyBraceWord represents the plain text closing curly brace character.
     /// </summary>
-    public static StringSymbolWord ClosingCurlyBraceWord = new("}", "}");
+    public static StringSymbolWord ClosingCurlyBraceWord { get; } = new("}", "}");
 }

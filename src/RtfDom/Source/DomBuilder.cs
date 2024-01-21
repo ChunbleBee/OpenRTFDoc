@@ -1,5 +1,6 @@
 namespace RtfDom;
 
+using System.Collections.Generic;
 using RtfModels;
 
 public static class DomBuilder
@@ -8,19 +9,16 @@ public static class DomBuilder
     {
         DocumentNode dNode = new();
         Node root = dNode;
-        List<FormatOption> opts = [];
-        Build(doc, ref root, ref dNode, ref opts);
+        Build(doc, ref root, ref dNode);
         return dNode;
     }
 
-    private static Node? Build(
+    private static void Build(
         Group group,
         ref Node current,
-        ref DocumentNode doc,
-        ref List<FormatOption> opts)
+        ref DocumentNode doc)
     {
-        Node? n = null;
-
+        FormatList options = [];
         /*
 @"
 {
@@ -36,9 +34,42 @@ public static class DomBuilder
         */
         foreach (IToken token in group.Children)
         {
+            if (token is IString str)
+            {
+                Node n = new(current)
+                {
+                    InnerText = str.Convert()
+                };
+            }
+            else if (token is Group grp)
+            {
+                if (grp.Type != GroupType.Default)
+                {
+                    FormatOption fmt = ParseDestinationGroup(grp);
+                    if (grp.Type == GroupType.Global)
+                    {
+                        fmt.Apply(doc);
+                    }
+                    else
+                    {
+                        options.Add(fmt);
+                    }
+                }
+                else
+                {
+                    Node n = new()
+                    {
+                        Attributes = current.Attributes,
+                        Parent = current,
+                    };
 
+                }
+            }
         }
+    }
 
-        return null;
+    private static FormatOption ParseDestinationGroup(Group group)
+    {
+        throw new NotImplementedException();
     }
 }

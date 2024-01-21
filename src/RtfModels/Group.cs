@@ -1,5 +1,6 @@
 namespace RtfModels;
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -27,14 +28,56 @@ public enum GroupType
 /// <summary>
 /// Group defines any group of 
 /// </summary>
-public class Group : IToken
+public class Group : IToken, IEnumerator<IToken>, IEnumerable<IToken>
 {
     /// <summary>
     /// Gets the <see cref="IList"/> of children groups associated with this group.
     /// </summary>
     public IList<IToken> Children { get; } = [];
 
+    private int index = 0;
+
+    /// <summary>
+    /// Gets or sets the type of group.
+    /// </summary>
     public GroupType Type { get; set; } = GroupType.Default;
+
+    /// <inheritdoc/>
+    public IToken Current => Children[index];
+
+    /// <inheritdoc>/>
+    object IEnumerator.Current => Children[index];
+
+    /// <inheritdoc>/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc>/>
+    public IEnumerator<IToken> GetEnumerator()
+    {
+        return Children.GetEnumerator();
+    }
+
+    /// <inheritdoc/>
+    public bool MoveNext()
+    {
+        if (index + 1 >= Children.Count)
+        {
+            return false;
+        }
+
+        index++;
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public void Reset()
+    {
+        index = 0;
+    }
 
     /// <inheritdoc/>
     public override string ToString()
@@ -49,5 +92,16 @@ public class Group : IToken
 
         builder.Append('}');
         return builder.ToString();
+    }
+
+    /// <inheritdoc/>
+    protected virtual void Dispose(bool isDisposing)
+    {
+        index = 0;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

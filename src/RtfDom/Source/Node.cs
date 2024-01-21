@@ -1,11 +1,12 @@
 ﻿namespace RtfDom;
 
+using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
 /// Node represents the base class of the RTF DOM.
 /// </summary>
-public class Node
+public class Node : IEnumerator<Node>, IEnumerable<Node>
 {
     /// <summary>
     /// Gets or sets the parent of this node.
@@ -27,13 +28,39 @@ public class Node
     /// </summary>
     public IList<Node> Children { get; } = [];
 
-
-    internal Dictionary<string, DomAttribute> Attributes { get; set; } = [];
-
     /// <summary>
     /// Gets or sets the inner text of this node.
     /// </summary>
     public string InnerText { get; set; } = string.Empty;
+
+    /// <inheritdoc/>
+    public Node Current => Children[index];
+
+    /// <summary>
+    /// Attributes is the <see cref="Dictionary"/> of formatting attributes applied to this node.
+    /// </summary>
+    internal Dictionary<string, DomAttribute> Attributes { get; set; } = [];
+
+    object IEnumerator.Current => throw new NotImplementedException();
+
+    private int index = 0;
+
+    private Node? parent;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node"/> class.
+    /// </summary>
+    public Node() { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Node"/> class.
+    /// </summary>
+    /// <param name="parent">The <see cref="Node"/> to set as the parent node.</param>
+    public Node(Node parent)
+    {
+        Parent = parent;
+        Attributes = parent.Attributes;
+    }
 
     /// <summary>
     /// Flatten recursively traverses the DOM tree in preorder, and returns the flattened list.
@@ -80,5 +107,45 @@ public class Node
         Attributes[attr.Name] = attr;
     }
 
-    private Node? parent;
+    /// <inheritdoc/>
+    public IEnumerator<Node> GetEnumerator()
+    {
+        return Children.GetEnumerator();
+    }
+
+    /// <inheritdoc/>
+    public bool MoveNext()
+    {
+        if (index + 1 >= Children.Count)
+        {
+            return false;
+        }
+
+        return (++index) > 0;
+    }
+
+    /// <inheritdoc/>
+    public void Reset()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    protected virtual void Dispose(bool isDisposing)
+    {
+        index = 0;
+    }
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
