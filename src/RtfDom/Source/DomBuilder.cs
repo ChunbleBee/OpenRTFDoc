@@ -1,6 +1,5 @@
 namespace RtfDom;
 
-using System.Collections.Generic;
 using RtfModels;
 
 public static class DomBuilder
@@ -19,6 +18,7 @@ public static class DomBuilder
         ref DocumentNode doc)
     {
         FormatList options = [];
+        Node prev = current;
         /*
 @"
 {
@@ -32,43 +32,66 @@ public static class DomBuilder
             {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}This is another paragraph with a numbered list item.\par
 }"
         */
-        foreach (IToken token in group.Children)
+        // For each token:
+        //  if it's an IString, convert it and put it into the 
+        foreach (IToken token in group)
         {
+            Node? n = null;
+
             if (token is IString str)
             {
-                Node n = new(current)
-                {
-                    InnerText = str.Convert()
-                };
+                prev.InnerText = str.Convert(prev.Attributes["Encoding"]);
+            }
+            else if (token is IFormat fmtr)
+            {
+                n = new(prev);
+                options.Add(IFormatOption.FromFormatWord(fmtr));
+                options.Apply(ref n);
+                options.Clear();
             }
             else if (token is Group grp)
             {
                 if (grp.Type != GroupType.Default)
                 {
-                    FormatOption fmt = ParseDestinationGroup(grp);
+                    FormatList fmtlst = ParseDestinationGroup(grp);
                     if (grp.Type == GroupType.Global)
                     {
-                        fmt.Apply(doc);
+                        Node docNode = doc;
+                        fmtlst.Apply(ref docNode);
                     }
                     else
                     {
-                        options.Add(fmt);
+                        options.AddRange(fmtlst);
                     }
                 }
                 else
                 {
-                    Node n = new()
+                    n = new()
                     {
-                        Attributes = current.Attributes,
+                        Attributes = prev.Attributes,
                         Parent = current,
                     };
-
+                    options.Apply(ref n);
+                    options.Clear();
+                    Build(grp, ref n, ref doc);
                 }
             }
+
+            prev = n ?? prev;
         }
     }
 
-    private static FormatOption ParseDestinationGroup(Group group)
+    private static FormatList ParseDestinationGroup(Group group)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static FormatList BuildColorTable(Group group)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static FormatList BuildFontTable(Group group)
     {
         throw new NotImplementedException();
     }

@@ -1,5 +1,7 @@
 namespace RtfModels;
 
+using System.Text;
+
 /// <summary>
 /// IString is the base interface for all tokens that directly convert to strings
 /// \uN, \'XX, \tab, and plain text runs fall into this category.
@@ -9,8 +11,9 @@ public interface IString : IToken
     /// <summary>
     /// Convert converts the token into it's plain text string.
     /// </summary>
-    /// <returns>the string of this </returns>
-    public string Convert();
+    /// <param name="encoding">The <see cref="Encoding"/> to use while writing.</param>
+    /// <returns>The encoded string of this text token.</returns>
+    public string Convert(Encoding encoding);
 }
 
 /// <summary>
@@ -26,13 +29,14 @@ public class Run(string text = "") : IString
     /// <inheritdoc/>
     public override string ToString()
     {
-        return ((InnerText?[0] != ';') ? " " : string.Empty) + InnerText;
+        return InnerText;
     }
 
     /// <inheritdoc/>
-    public string Convert()
+    public string Convert(Encoding encoding)
     {
-        return InnerText;
+        // This should be safe, as plaintext in RTF should be 7 bit ascii.
+        return encoding.GetString(Encoding.ASCII.GetBytes(InnerText));
     }
 }
 
@@ -41,7 +45,7 @@ public class Run(string text = "") : IString
 /// </summary>
 public abstract class StringValueWord : ValueWord, IString
 {
-    public abstract string Convert();
+    public abstract string Convert(Encoding encoding);
     public StringValueWord(string name = "", string param = "") : base(name, param)
     {
         Type = WordType.Value & WordType.Symbol;
@@ -54,7 +58,7 @@ public abstract class StringValueWord : ValueWord, IString
 /// <param name="param">The unicode code of for the character.</param>
 public class UnicodeStringWord(string param) : StringValueWord("u", param)
 {
-    public override string Convert()
+    public override string Convert(Encoding _)
     {
         return $"{System.Convert.ToChar($"\\u{Param}")}";
     }
@@ -67,9 +71,9 @@ public class UnicodeStringWord(string param) : StringValueWord("u", param)
 public class AsciiStringWord(string param) : StringValueWord("u", param)
 {
     /// <inheritdoc/>
-    public override string Convert()
+    public override string Convert(Encoding encoding)
     {
-        return $"{System.Convert.ToChar($"\\u{Param}")}";
+        return encoding.GetString([System.Convert.ToByte(Param)]);
     }
 }
 
@@ -79,7 +83,7 @@ public class AsciiStringWord(string param) : StringValueWord("u", param)
 public class StringSymbolWord(string name, string value) : SymbolWord(name), IString
 {
     public string Value { get; } = value;
-    public string Convert()
+    public string Convert(Encoding encoding)
     {
         return Value;
     }

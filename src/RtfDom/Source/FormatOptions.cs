@@ -1,22 +1,33 @@
 namespace RtfDom;
 
+using RtfModels;
+
 /// <summary>
-/// FormatOptions.
+/// IFormatOption is an interface for any <see cref="DomAttribute"/> that can automatically apply their
 /// </summary>
-public abstract class FormatOption
+public interface IFormatOption
 {
-    public abstract bool Apply(Node other);
+    public FormatType Type { get; }
+    public abstract bool Apply(ref Node node);
+
+    public static IFormatOption FromFormatWord(IFormat fmt)
+    {
+        throw new NotImplementedException();
+    }
 }
 
-public class FormatList : List<FormatOption>
+/// <summary>
+/// FormatList is a list of formatting options.
+/// </summary>
+public class FormatList : List<IFormatOption>
 {
-    public bool Apply(Node n)
+    public bool Apply(ref Node n)
     {
         bool appliedAll = true;
 
-        foreach (FormatOption fmt in this)
+        foreach (IFormatOption fmt in this)
         {
-            fmt.Apply(n);
+            appliedAll &= fmt.Apply(ref n);
         }
 
         return appliedAll;

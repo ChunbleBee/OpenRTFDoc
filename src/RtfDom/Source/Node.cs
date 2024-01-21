@@ -95,7 +95,7 @@ public class Node : IEnumerator<Node>, IEnumerable<Node>
     /// <returns>True if the node contains the attribute with the same values, false otherwise.</returns>
     public bool HasAttributeValue(DomAttribute other)
     {
-        return Attributes.TryGetValue(other.Name, out DomAttribute? ours) && ours.Value == other.Value;
+        return Attributes.TryGetValue(other.Name, out DomAttribute? ours) && ours == other;
     }
 
     /// <summary>
