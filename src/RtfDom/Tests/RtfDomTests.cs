@@ -47,7 +47,30 @@ public class Tests
 
         Group? docGroup = null;
         DocumentNode? docNode = null;
-        Assert.DoesNotThrow(() => { docGroup = RtfParser.Parser.Parse(rtfStr); });
-        Assert.DoesNotThrow(() => { documentNode = DomBuilder.Build(docGroup!); });
+        Assert.DoesNotThrow(() => { docGroup = Parser.Parse(rtfstr); });
+        Assert.DoesNotThrow(() => { docNode = DomBuilder.Build(docGroup!); });
+        TestContext.WriteLine($"Document: {docNode}");
+    }
+
+    [Test]
+    public void TestDomInterpreterOldListStyle()
+    {
+        string rtfstr = @"
+        {
+            \rtf1
+            \pard
+            This is a paragraph of text.\par
+            # Should provide a formatting 
+            {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}This is a paragraph with a numbered list item.\par
+                {\pntext\f0 1.\tab}{\pntext\f0 1.\tab}{\*\pn\pnlvlbody\pnf0\pnindent0\pnstart1{\pntxta .}}This is a second level list item.\par
+                {\pntext\f0 1.\tab}This is another second level list item.\par
+                    {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}This is another paragraph with a numbered list item.\par
+        }";
+
+        Group? docGroup = null;
+        DocumentNode? docNode = null;
+        Assert.DoesNotThrow(() => { docGroup = Parser.Parse(rtfstr); });
+        Assert.DoesNotThrow(() => { docNode = DomBuilder.Build(docGroup!); });
+        TestContext.WriteLine($"Document: {docNode}");
     }
 }

@@ -19,19 +19,7 @@ public static class DomBuilder
     {
         FormatList options = [];
         Node prev = current;
-        /*
-@"
-{
-    \rtf1
-    \pard
-    This is a paragraph of text.\par
-    # Should provide a formatting 
-    {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}This is a paragraph with a numbered list item.\par
-        {\pntext\f0 1.\tab}{\pntext\f0 1.\tab}{\*\pn\pnlvlbody\pnf0\pnindent0\pnstart1{\pntxta .}}This is a second level list item.\par
-        {\pntext\f0 1.\tab}This is another second level list item.\par
-            {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}This is another paragraph with a numbered list item.\par
-}"
-        */
+
         // For each token:
         //  if it's an IString, convert it and put it into the 
         foreach (IToken token in group)
@@ -80,19 +68,19 @@ public static class DomBuilder
 
     private static FormatList ParseDestinationGroup(Group group)
     {
-        return new FormatList();
+        return [];
         throw new NotImplementedException();
     }
 
     private static FormatList BuildColorTable(Group group)
     {
-        return new FormatList();
+        return [];
         throw new NotImplementedException();
     }
 
     private static FormatList BuildFontTable(Group group)
     {
-        return new FormatList();
+        return [];
         throw new NotImplementedException();
     }
 }

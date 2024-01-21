@@ -2,6 +2,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 /// <summary>
 /// Node represents the base class of the RTF DOM.
@@ -97,7 +98,7 @@ public class Node(DocumentNode? doc = null, Node? parent = null) : IEnumerator<N
         Attributes[attr.Name] = attr;
     }
 
-    public virtual DomAttribute GetAttribute(string attrName)
+    public virtual DomAttribute? GetAttribute(string attrName)
     {
         Attributes.TryGetValue(attrName, out DomAttribute? attr);
         if (attr != null)
@@ -107,7 +108,7 @@ public class Node(DocumentNode? doc = null, Node? parent = null) : IEnumerator<N
 
         if (Parent == null)
         {
-            throw new InvalidOperationException("document node default wasn't found");
+            return null;
         }
 
         foreach (Node n in Parent.Children)
@@ -158,5 +159,34 @@ public class Node(DocumentNode? doc = null, Node? parent = null) : IEnumerator<N
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public override string ToString()
+    {
+        return ToString(0);
+    }
+
+    internal string ToString(int depth = 0)
+    {
+        StringBuilder builder = new();
+
+        string prependLvl1 = string.Empty.PadLeft(depth);
+        string prependLvl2 = string.Empty.PadLeft(depth + 2);
+        string prependLvl3 = string.Empty.PadLeft(depth + 4);
+
+        builder.AppendLine($"{prependLvl1}Node: {GetType()}");
+        builder.AppendLine($"{prependLvl2}Attributes:");
+        foreach (KeyValuePair<string, DomAttribute> kvp in Attributes)
+        {
+            builder.AppendLine($"{prependLvl3}{kvp.Key}: {kvp.Value.ToString()}");
+        }
+
+        builder.AppendLine($"{prependLvl2}Children:");
+        foreach (Node child in Children)
+        {
+            builder.AppendLine(child.ToString(depth + 4));
+        }
+
+        return builder.ToString();
     }
 }

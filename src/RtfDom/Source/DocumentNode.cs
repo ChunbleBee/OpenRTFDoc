@@ -9,12 +9,18 @@ using RtfModels;
 /// </summary>
 public class DocumentNode : Node
 {
+    private readonly string defaultKey = "default";
     public Dictionary<string, Color> ColorTable { get; } = [];
     public Dictionary<string, FontReference> FontTable { get; } = [];
 
     public DocumentNode()
     {
-        ColorTable["default"] = Color.Black;
+        FontReference defFont = new("Times New Roman");
+        Color defColor = Color.Black;
+        ColorTable[defaultKey] = defColor;
+        FontTable[defaultKey] = defFont;
+
+        Attributes.Add("Font", new FontAttribute(defaultKey, this));
     }
 
     public FormatList GetDefaultFormatting()

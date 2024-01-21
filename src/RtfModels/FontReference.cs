@@ -2,8 +2,8 @@ namespace RtfModels;
 
 using System.Text;
 
-public class FontReference
+public class FontReference(string fontName)
 {
-    public string FontName { get; }
-    public Encoding Encoding { get; }
+    public string FontName { get; } = fontName;
+    public Encoding Encoding { get; } = Encoding.Default;
 }

@@ -11,6 +11,8 @@ public struct DefaultKey
 /// <summary>
 /// DomAttribute describes some attribute that a node may have.
 /// </summary>
+/// <remarks>Initializes a new instance of the <see cref="DomAttribute"/> class.</remark>
+/// <param name="name">The name of the </param>
 public abstract class DomAttribute(string name)
 {
     /// <summary>
@@ -23,6 +25,7 @@ public abstract class DomAttribute(string name)
 /// RefDomAttribute describes some attribute that a node may have that references document global attributes.
 /// </summary>
 /// <typeparam name="T">The global reference type.</typeparam>
+/// <remarks>Initializes a new instance of the <see cref="RtfDomAttribute"/> class.</remark>
 /// <param name="name">The name of the </param>
 /// <param name="doc">The <see cref="DocumentNode"/> to reference from.</param>
 /// <param name="globalID">The reference value to use to find the global attribute.</param>
@@ -61,6 +64,7 @@ public class PlainAttribute(DocumentNode doc) : RefDomAttribute<string?>("Plain"
 /// <summary>
 /// ColorAttribute describes a <see cref="Color"/> to apply to the <see cref="Node"/>.
 /// </summary>
+/// <remarks>Initializes a new instance of the <see cref="ColorAttribute"/> class.</remark>
 /// <param name="globalID">The global color table <see cref="Guid"/>.</param>
 public abstract class ColorAttribute(string gid, DocumentNode doc) : RefDomAttribute<string>("Color", doc, gid), IFormatOption
 {
@@ -82,99 +86,18 @@ public abstract class ColorAttribute(string gid, DocumentNode doc) : RefDomAttri
 /// <summary>
 /// BoldAttribute defines the bold value of the node.
 /// </summary>
+/// <remarks>Initializes a new instance of the <see cref="BoldAttribute"/> class.</remark>
 /// <param name="on">True if the next run of text should be bold, false otherwise.</param>
 public class BoldAttribute(bool on) : DomAttribute("Bold"), IFormatOption
 {
     public bool Value = on;
     public FormatType Type { get; } = FormatType.Decorator;
 
+    /// <inheritdoc/>
     public bool Apply(ref Node node)
     {
-        if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is BoldAttribute other)
-        {
-            if (other.Value == Value) return false;
-        }
-
-        node.Attributes[Name] = this;
-        return true;
-    }
-}
-
-/// <summary>
-/// UnderlinedAttribute defines the bold value of the node.
-/// </summary>
-/// <param name="on">True if the next run of text should be underlined, false otherwise.</param>
-public class UnderlinedAttribute(bool on) : DomAttribute("Underlined"), IFormatOption
-{
-    public bool Value = on;
-    public FormatType Type { get; } = FormatType.Decorator;
-
-    public bool Apply(ref Node node)
-    {
-        if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is UnderlinedAttribute other)
-        {
-            if (other.Value == Value) return false;
-        }
-
-        node.Attributes[Name] = this;
-        return true;
-    }
-}
-
-/// <summary>
-/// SuperscriptAttribute defines the bold value of the node.
-/// </summary>
-/// <param name="on">True if the next run of text should be superscript, false otherwise.</param>
-public class SuperscriptAttribute(bool on) : DomAttribute("Superscript"), IFormatOption
-{
-    public bool Value = on;
-    public FormatType Type { get; } = FormatType.Decorator;
-
-    public bool Apply(ref Node node)
-    {
-        if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is SuperscriptAttribute other)
-        {
-            if (other.Value == Value) return false;
-        }
-
-        node.Attributes[Name] = this;
-        return true;
-    }
-}
-
-/// <summary>
-/// SubscriptAttribute defines the bold value of the node.
-/// </summary>
-/// <param name="on">True if the next run of text should be subscripted, false otherwise.</param>
-public class SubscriptAttribute(bool on) : DomAttribute("Subscript"), IFormatOption
-{
-    public bool Value = on;
-    public FormatType Type { get; } = FormatType.Decorator;
-
-    public bool Apply(ref Node node)
-    {
-        if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is SubscriptAttribute other)
-        {
-            if (other.Value == Value) return false;
-        }
-
-        node.Attributes[Name] = this;
-        return true;
-    }
-}
-
-/// <summary>
-/// StrikeThroughAttribute defines the strike through value of the node.
-/// </summary>
-/// <param name="on">True if the next run of text should be strikethrough, false otherwise.</param>
-public class StrikeThroughAttribute(bool on) : DomAttribute("StrikeThrough"), IFormatOption
-{
-    public bool Value = on;
-    public FormatType Type { get; } = FormatType.Decorator;
-
-    public bool Apply(ref Node node)
-    {
-        if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is StrikeThroughAttribute other)
+        DomAttribute? attr = node.GetAttribute(Name);
+        if (attr != null && attr is BoldAttribute other)
         {
             if (other.Value == Value) return false;
         }
@@ -187,15 +110,122 @@ public class StrikeThroughAttribute(bool on) : DomAttribute("StrikeThrough"), IF
 /// <summary>
 /// ItalicsAttribute defines the italicization value of the node.
 /// </summary>
+/// <remarks>Initializes a new instance of the <see cref="ItalicsAttribute"/> class.</remark>
 /// <param name="on">True if the next run of text should be italicized, false otherwise.</param>
 public class ItalicsAttribute(bool on) : DomAttribute("Italics"), IFormatOption
+{
+    /// <summary>
+    /// Gets a value indicating whether italics should be turned on.
+    /// </summary>
+    public bool Value { get; } = on;
+
+    /// <inheritdoc/>
+    public FormatType Type { get; } = FormatType.Decorator;
+
+    /// <inheritdoc/>
+    public bool Apply(ref Node node)
+    {
+        DomAttribute? attr = node.GetAttribute(Name);
+        if (attr != null && attr is ItalicsAttribute other)
+        {
+            if (other.Value == Value) return false;
+        }
+
+        node.Attributes[Name] = this;
+        return true;
+    }
+}
+
+/// <summary>
+/// UnderlinedAttribute defines the bold value of the node.
+/// </summary>
+/// <remarks>Initializes a new instance of the <see cref="UnderlinedAttribute"/> class.</remark>
+/// <param name="on">True if the next run of text should be underlined, false otherwise.</param>
+public class UnderlinedAttribute(bool on) : DomAttribute("Underlined"), IFormatOption
 {
     public bool Value = on;
     public FormatType Type { get; } = FormatType.Decorator;
 
+    /// <inheritdoc/>
     public bool Apply(ref Node node)
     {
-        if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is ItalicsAttribute other)
+        DomAttribute? attr = node.GetAttribute(Name);
+        if (attr != null && attr is UnderlinedAttribute other)
+        {
+            if (other.Value == Value) return false;
+        }
+
+        node.Attributes[Name] = this;
+        return true;
+    }
+}
+
+/// <summary>
+/// StrikeThroughAttribute defines the strike through value of the node.
+/// </summary>
+/// <remarks>Initializes a new instance of the <see cref="StrikeThroughAttribute"/> class.</remark>
+/// <param name="on">True if the next run of text should be strikethrough, false otherwise.</param>
+public class StrikeThroughAttribute(bool on) : DomAttribute("StrikeThrough"), IFormatOption
+{
+    /// <summary>
+    /// Gets a value indicating whether text strikethrough should be turned on.
+    /// </summary>
+    public bool Value { get; } = on;
+    public FormatType Type { get; } = FormatType.Decorator;
+
+    /// <inheritdoc/>
+    public bool Apply(ref Node node)
+    {
+        DomAttribute? attr = node.GetAttribute(Name);
+        if (attr != null && attr is StrikeThroughAttribute other)
+        {
+            if (other.Value == Value) return false;
+        }
+
+        node.Attributes[Name] = this;
+        return true;
+    }
+}
+
+/// <summary>
+/// SuperscriptAttribute defines the superscripting value of the node.
+/// </summary>
+/// <remarks>Initializes a new instance of the <see cref="SuperscriptAttribute"/> class.</remark>
+/// <param name="on">True if the next run of text should be superscript, false otherwise.</param>
+public class SuperscriptAttribute(bool on) : DomAttribute("Superscript"), IFormatOption
+{
+    public bool Value = on;
+    public FormatType Type { get; } = FormatType.Decorator;
+
+    /// <inheritdoc/>
+    public bool Apply(ref Node node)
+    {
+        DomAttribute? attr = node.GetAttribute(Name);
+        if (attr != null && attr is SuperscriptAttribute other)
+        {
+            if (other.Value == Value) return false;
+        }
+
+        node.Attributes[Name] = this;
+        return true;
+    }
+}
+
+/// <summary>
+/// SubscriptAttribute defines the subscript value of the node.
+/// </summary>
+/// <remarks>Initializes a new instance of the <see cref="SubscriptAttribute"/> class.</remark>
+/// <param name="on">True if the next run of text should be subscripted, false otherwise.</param>
+public class SubscriptAttribute(bool on) : DomAttribute("Subscript"), IFormatOption
+{
+    public bool Value = on;
+    public FormatType Type { get; } = FormatType.Decorator;
+
+    /// <inheritdoc/>
+    public bool Apply(ref Node node)
+    {
+        DomAttribute? attr = node.GetAttribute(Name);
+        if (attr != null && attr is SuperscriptAttribute other)
         {
             if (other.Value == Value) return false;
         }
@@ -212,9 +242,9 @@ public class ItalicsAttribute(bool on) : DomAttribute("Italics"), IFormatOption
 public class FontAttribute(string fontRef, DocumentNode doc) : RefDomAttribute<string>("Font", doc, fontRef), IFormatOption
 {
     /// <summary>
-    /// Gets the <see cref="FontReference"/> associated with th
+    /// Gets the <see cref="FontReference"/> associated with this font ref id.
     /// </summary>
-    public FontReference Value { get { return Document.FontTable.GetValueOrDefault(GlobalID, Document.FontTable["0"]); } }
+    public FontReference Value { get { return Document.FontTable.GetValueOrDefault(GlobalID, Document.FontTable["default"]); } }
 
     /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.Decorator;
@@ -222,7 +252,8 @@ public class FontAttribute(string fontRef, DocumentNode doc) : RefDomAttribute<s
     /// <inheritdoc/>
     public bool Apply(ref Node node)
     {
-        if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is FontAttribute other)
+        DomAttribute? attr = node.GetAttribute(Name);
+        if (attr != null && attr is FontAttribute other)
         {
             if (other.GlobalID == GlobalID) return false;
         }
