@@ -68,7 +68,7 @@ public class ColorAttribute(string gid, DocumentNode doc) : DomAttribute<ColorAt
 
 public bool Apply(ref Node node)
 {
-
+    throw nameof NotImplementedException();
 }
 
 public override bool Equals(object? obj)
@@ -82,7 +82,8 @@ public override bool Equals(ColorAttribute? other)
 }
 }
 
-public class BoldAttribute(bool on) : DomAttribute<>, IFormatOption
+
+public class BoldAttribute(bool on) : DomAttribute<>("Bold", ), IFormatOption
 {
     public FormatType FormatType { get; } = FormatType.Decorator;
 
