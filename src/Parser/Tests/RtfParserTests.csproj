@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Source\Parser.csproj" />
+    <ProjectReference Include="..\Source\RtfParser.csproj" />
     <ProjectReference Include="..\..\RtfModels\RtfModels.csproj" />
   </ItemGroup>
 

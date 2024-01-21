@@ -1,4 +1,4 @@
-namespace Parser;
+namespace RtfParser;
 
 using System.Text;
 using RtfModels;

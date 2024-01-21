@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Source\RtfDom.csproj" />
+    <ProjectReference Include="..\..\Parser\Source\Parser.csproj" />
+    <ProjectReference Include="..\..\RtfModels\RtfModels.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ namespace ParserTests;
 using System.Text;
 using NUnit.Framework;
 using NUnit;
-using Parser;
+using RtfParser;
 using RtfModels;
 
 public class Tests
