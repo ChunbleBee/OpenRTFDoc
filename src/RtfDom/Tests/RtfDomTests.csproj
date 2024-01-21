@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Source\RtfDom.csproj" />
-    <ProjectReference Include="..\..\Parser\Source\Parser.csproj" />
+    <ProjectReference Include="..\..\RtfParser\Source\RtfParser.csproj" />
     <ProjectReference Include="..\..\RtfModels\RtfModels.csproj" />
   </ItemGroup>
 

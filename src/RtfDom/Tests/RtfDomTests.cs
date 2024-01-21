@@ -47,7 +47,7 @@ public class Tests
 
         Group? docGroup = null;
         DocumentNode? docNode = null;
-        Assert.DoesNotThrow(() => { docGroup = Parser.Parse(rtfStr); });
-        Assert.DoesNotThrow(() => { documentNode = DomBuilder.Build(docGroup); })
+        Assert.DoesNotThrow(() => { docGroup = RtfParser.Parser.Parse(rtfStr); });
+        Assert.DoesNotThrow(() => { documentNode = DomBuilder.Build(docGroup!); });
     }
 }
