@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Node represents the base class of the RTF DOM.
 /// </summary>
-public class Node : IEnumerator<Node>, IEnumerable<Node>
+public class Node(DocumentNode? doc = null, Node? parent = null) : IEnumerator<Node>, IEnumerable<Node>
 {
     /// <summary>
     /// Gets or sets the parent of this node.
@@ -22,6 +22,11 @@ public class Node : IEnumerator<Node>, IEnumerable<Node>
             parent = value;
         }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public DocumentNode? Document { get; } = doc;
 
     /// <summary>
     /// Gets the list of <see cref="Node"/> that are direct descendants of this.
@@ -45,22 +50,7 @@ public class Node : IEnumerator<Node>, IEnumerable<Node>
 
     private int index = 0;
 
-    private Node? parent;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Node"/> class.
-    /// </summary>
-    public Node() { }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Node"/> class.
-    /// </summary>
-    /// <param name="parent">The <see cref="Node"/> to set as the parent node.</param>
-    public Node(Node parent)
-    {
-        Parent = parent;
-        Attributes = parent.Attributes;
-    }
+    private Node? parent = parent;
 
     /// <summary>
     /// Flatten recursively traverses the DOM tree in preorder, and returns the flattened list.
@@ -105,6 +95,27 @@ public class Node : IEnumerator<Node>, IEnumerable<Node>
     public void AddAttribute(DomAttribute attr)
     {
         Attributes[attr.Name] = attr;
+    }
+
+    public virtual DomAttribute GetAttribute(string attrName)
+    {
+        Attributes.TryGetValue(attrName, out DomAttribute? attr);
+        if (attr != null)
+        {
+            return attr;
+        }
+
+        if (Parent == null)
+        {
+            throw new InvalidOperationException("document node default wasn't found");
+        }
+
+        foreach (Node n in Parent.Children)
+        {
+            n.Attributes.TryGetValue(attrName, out attr);
+        }
+
+        return attr ??= Parent.GetAttribute(attrName);
     }
 
     /// <inheritdoc/>

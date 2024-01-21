@@ -11,4 +11,14 @@ public class DocumentNode : Node
 {
     public Dictionary<string, Color> ColorTable { get; } = [];
     public Dictionary<string, FontReference> FontTable { get; } = [];
+
+    public DocumentNode()
+    {
+        ColorTable["default"] = Color.Black;
+    }
+
+    public FormatList GetDefaultFormatting()
+    {
+        throw new NotImplementedException();
+    }
 }

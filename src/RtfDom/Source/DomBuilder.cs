@@ -40,11 +40,11 @@ public static class DomBuilder
 
             if (token is IString str)
             {
-                prev.InnerText = str.Convert(prev.Attributes["Encoding"]);
+                prev.InnerText = str.Convert(((FontAttribute)prev.GetAttribute("Font")).Value.Encoding);
             }
             else if (token is IFormat fmtr)
             {
-                n = new(prev);
+                n = new(doc, current);
                 options.Add(IFormatOption.FromFormatWord(fmtr));
                 options.Apply(ref n);
                 options.Clear();
@@ -66,16 +66,13 @@ public static class DomBuilder
                 }
                 else
                 {
-                    n = new()
-                    {
-                        Attributes = prev.Attributes,
-                        Parent = current,
-                    };
+                    n = new(doc, current);
                     options.Apply(ref n);
                     options.Clear();
                     Build(grp, ref n, ref doc);
                 }
             }
+
 
             prev = n ?? prev;
         }
