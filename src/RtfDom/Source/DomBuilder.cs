@@ -47,15 +47,15 @@ public static class DomBuilder
                 Console.WriteLine($"Group Token: {grp.GetType()}");
                 if (grp.Type != GroupType.Default)
                 {
-                    FormatList fmtlst = ParseDestinationGroup(grp);
                     if (grp.Type == GroupType.Global)
                     {
+                        FormatList fmtlst = InterpretGlobalDestinationGroup(grp);
                         Node docNode = doc;
                         fmtlst.Apply(ref docNode);
                     }
-                    else
+                    else if (grp.Type == GroupType.Local)
                     {
-                        options.AddRange(fmtlst);
+                        n = InterpretDestinationGroup(grp, current, doc);
                     }
                 }
                 else
@@ -76,9 +76,16 @@ public static class DomBuilder
         }
     }
 
-    private static FormatList ParseDestinationGroup(Group group)
+    private static FormatList InterpretGlobalDestinationGroup(Group group)
     {
         return [];
+        throw new NotImplementedException();
+    }
+
+    private static Node InterpretDestinationGroup(Group group, Node current, DocumentNode doc)
+    {
+        Node destGroupNode = new(doc, current);
+        return destGroupNode;
         throw new NotImplementedException();
     }
 
