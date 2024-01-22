@@ -64,7 +64,7 @@ public class Tests
             {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}This is a paragraph with a numbered list item.\par
                 {\pntext\f0 1.\tab}{\pntext\f0 1.\tab}{\*\pn\pnlvlbody\pnf0\pnindent0\pnstart1{\pntxta .}}This is a second level list item.\par
                 {\pntext\f0 1.\tab}This is another second level list item.\par
-                    {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}\b This is another \i paragraph with a numbered \b0 list item.\par
+                    {\pntext\f0 1.\tab}{\*\pn\pnlvlblt\pnf0\pnindent0{\pntxtb .}}\b This \b is another \i paragraph with a numbered \b0 list item.\par
         }";
 
         Group? docGroup = null;
