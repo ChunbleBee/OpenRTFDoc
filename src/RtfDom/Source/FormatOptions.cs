@@ -26,7 +26,33 @@ public interface IFormatOption
     /// <returns>A new <see cref="DomAttribute"/> built from the formatting word.</returns>
     public static IFormatOption FromFormatWord(IFormat fmt)
     {
-        throw new NotImplementedException();
+        switch (fmt)
+        {
+            case VerticalTypesetWord word:
+                {
+                    if (word.State == VerticalTypesetType.None)
+                    {
+                        return new VerticalTypesettingAttribute(VerticalTypesetType.None);
+                    }
+                    else if (word.State == VerticalTypesetType.None)
+                    {
+                        return new VerticalTypesettingAttribute(VerticalTypesetType.None);
+                    }
+                    else if (word.State == VerticalTypesetType.None)
+                    {
+                        return new VerticalTypesettingAttribute(VerticalTypesetType.None);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"unknown vertical typesetting value: {word.State}");
+                    }
+                }
+            case BoldWord word: { return new BoldAttribute(word.Param == null || word.Param != "0"); }
+            case ItalicsWord word: { return new ItalicsAttribute(word.Param == null || word.Param != "0"); }
+            case UnderlinedWord word: { return new UnderlinedAttribute(word.Param == null || word.Param != "0"); }
+            case StrikeThroughWord word: { return new StrikeThroughAttribute(word.Param == null || word.Param != "0"); }
+            default: throw new NotImplementedException($"unknown formatting word: {fmt.GetType()}");
+        }
     }
 }
 

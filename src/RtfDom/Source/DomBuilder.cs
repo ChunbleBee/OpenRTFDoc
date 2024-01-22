@@ -1,14 +1,15 @@
 namespace RtfDom;
 
+using System.ComponentModel;
 using RtfModels;
 
 public static class DomBuilder
 {
-    public static DocumentNode Build(Group doc)
+    public static DocumentNode Build(Group docGroup)
     {
         DocumentNode dNode = new();
         Node root = dNode;
-        Build(doc, ref root, ref dNode);
+        Build(docGroup, ref root, ref dNode);
         return dNode;
     }
 
@@ -24,14 +25,17 @@ public static class DomBuilder
         //  if it's an IString, convert it and put it into the 
         foreach (IToken token in group)
         {
+            Console.WriteLine($"Current token: {token}\n\tFormatting Options: {options.Count}");
             Node? n = null;
 
             if (token is IString str)
             {
                 prev.InnerText = str.Convert(((FontAttribute)prev.GetAttribute("Font")).Value.Encoding);
+                Console.WriteLine($"IString Token, Value: {prev.InnerText}");
             }
             else if (token is IFormat fmtr)
             {
+                Console.WriteLine("IFormat Token");
                 n = new(doc, current);
                 options.Add(IFormatOption.FromFormatWord(fmtr));
                 options.Apply(ref n);
@@ -39,6 +43,7 @@ public static class DomBuilder
             }
             else if (token is Group grp)
             {
+                Console.WriteLine($"Group Token: {grp.GetType()}");
                 if (grp.Type != GroupType.Default)
                 {
                     FormatList fmtlst = ParseDestinationGroup(grp);
@@ -61,8 +66,12 @@ public static class DomBuilder
                 }
             }
 
-
-            prev = n ?? prev;
+            if (n != null)
+            {
+                Console.WriteLine("heeeerrrrrreeeee");
+                current.Children.Add(n);
+            }
+            Console.WriteLine($"Prev Node: {prev}");
         }
     }
 

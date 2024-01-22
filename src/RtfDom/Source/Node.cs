@@ -184,6 +184,7 @@ public class Node(DocumentNode? doc = null, Node? parent = null) : IEnumerator<N
         builder.AppendLine($"{prependLvl2}Children:");
         foreach (Node child in Children)
         {
+            Console.WriteLine("here");
             builder.AppendLine(child.ToString(depth + 4));
         }
 

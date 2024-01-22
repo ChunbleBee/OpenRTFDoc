@@ -1828,7 +1828,7 @@ public static class ControlWordMapper
             "zwj" => new SymbolWord("zwj"),
             "zwnbo" => new SymbolWord("zwnbo"),
             "zwnj" => new SymbolWord("zwnj"),
-            _ => throw new ArgumentException()
+            _ => throw new ArgumentException($"symbol name: {cword}, {param}")
         };
     }
 }

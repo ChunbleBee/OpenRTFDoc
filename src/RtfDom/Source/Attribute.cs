@@ -3,11 +3,6 @@ namespace RtfDom;
 using System.Drawing;
 using RtfModels;
 
-public struct DefaultKey
-{
-    public string ColorDefault { get; }
-}
-
 /// <summary>
 /// DomAttribute describes some attribute that a node may have.
 /// </summary>
@@ -49,9 +44,11 @@ public abstract class RefDomAttribute<T>(string name, DocumentNode doc, T global
 public class PlainAttribute(DocumentNode doc) : RefDomAttribute<string?>("Plain", doc, null), IFormatOption
 {
     /// <summary>
-    /// Value is the internal value of the 
+    /// Gets the <see cref="FormatList"/> of all default formatting in the document.
     /// </summary>
     public FormatList Value { get { return Document.GetDefaultFormatting(); } }
+
+    /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.AllFormatting;
 
     /// <inheritdoc/>
@@ -68,10 +65,17 @@ public class PlainAttribute(DocumentNode doc) : RefDomAttribute<string?>("Plain"
 /// <param name="globalID">The global color table <see cref="Guid"/>.</param>
 public abstract class ColorAttribute(string gid, DocumentNode doc) : RefDomAttribute<string>("Color", doc, gid), IFormatOption
 {
+    /// <summary>
+    /// Gets the color value associated with this attribute.
+    /// If it's not found in the color table, the default color is used.
+    /// </summary>
+
     public Color Value { get { return Document.ColorTable.GetValueOrDefault(GlobalID, Document.ColorTable["0"]); } }
 
+    /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.Color;
 
+    /// <inheritdoc/>
     public bool Apply(ref Node node)
     {
         if (node.Attributes.TryGetValue(Name, out DomAttribute? attr) && attr != null && attr is ColorAttribute other)
@@ -90,7 +94,12 @@ public abstract class ColorAttribute(string gid, DocumentNode doc) : RefDomAttri
 /// <param name="on">True if the next run of text should be bold, false otherwise.</param>
 public class BoldAttribute(bool on) : DomAttribute("Bold"), IFormatOption
 {
-    public bool Value = on;
+    /// <summary>
+    /// Gets a value indicating whether italics should be turned on.
+    /// </summary>
+    public bool Value { get; } = on;
+
+    /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.Decorator;
 
     /// <inheritdoc/>
@@ -143,7 +152,12 @@ public class ItalicsAttribute(bool on) : DomAttribute("Italics"), IFormatOption
 /// <param name="on">True if the next run of text should be underlined, false otherwise.</param>
 public class UnderlinedAttribute(bool on) : DomAttribute("Underlined"), IFormatOption
 {
-    public bool Value = on;
+    /// <summary>
+    /// Gets a value indicating whether text underlining should be turned on.
+    /// </summary>
+    public bool Value { get; } = on;
+
+    /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.Decorator;
 
     /// <inheritdoc/>
@@ -171,6 +185,8 @@ public class StrikeThroughAttribute(bool on) : DomAttribute("StrikeThrough"), IF
     /// Gets a value indicating whether text strikethrough should be turned on.
     /// </summary>
     public bool Value { get; } = on;
+
+    /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.Decorator;
 
     /// <inheritdoc/>
@@ -188,46 +204,28 @@ public class StrikeThroughAttribute(bool on) : DomAttribute("StrikeThrough"), IF
 }
 
 /// <summary>
-/// SuperscriptAttribute defines the superscripting value of the node.
+/// VerticalTypesettingAttribute defines the vertical typesetting of the node.
 /// </summary>
-/// <remarks>Initializes a new instance of the <see cref="SuperscriptAttribute"/> class.</remark>
-/// <param name="on">True if the next run of text should be superscript, false otherwise.</param>
-public class SuperscriptAttribute(bool on) : DomAttribute("Superscript"), IFormatOption
+/// <remarks>Initializes a new instance of the <see cref="VerticalTypesettingAttribute"/> class.</remark>
+/// <param name="value">The <see cref="VerticalTypesetType"/> to use for the node.</param>
+public class VerticalTypesettingAttribute(VerticalTypesetType value) : DomAttribute("VerticalTypesetting"), IFormatOption
 {
-    public bool Value = on;
+    /// <summary>
+    /// Gets the <see cref="VerticalTypesetType"/> associated with this attribute.
+    /// </summary>
+    public VerticalTypesetType Value { get; } = value;
+
+    /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.Decorator;
 
     /// <inheritdoc/>
     public bool Apply(ref Node node)
     {
-        DomAttribute? attr = node.GetAttribute(Name);
-        if (attr != null && attr is SuperscriptAttribute other)
+        DomAttribute? attr = node.GetAttribute("VerticalTypesetting");
+        if (attr != null && attr is VerticalTypesettingAttribute other)
         {
-            if (other.Value == Value) return false;
-        }
-
-        node.Attributes[Name] = this;
-        return true;
-    }
-}
-
-/// <summary>
-/// SubscriptAttribute defines the subscript value of the node.
-/// </summary>
-/// <remarks>Initializes a new instance of the <see cref="SubscriptAttribute"/> class.</remark>
-/// <param name="on">True if the next run of text should be subscripted, false otherwise.</param>
-public class SubscriptAttribute(bool on) : DomAttribute("Subscript"), IFormatOption
-{
-    public bool Value = on;
-    public FormatType Type { get; } = FormatType.Decorator;
-
-    /// <inheritdoc/>
-    public bool Apply(ref Node node)
-    {
-        DomAttribute? attr = node.GetAttribute(Name);
-        if (attr != null && attr is SuperscriptAttribute other)
-        {
-            if (other.Value == Value) return false;
+            if (other.Value == Value)
+                return false;
         }
 
         node.Attributes[Name] = this;
