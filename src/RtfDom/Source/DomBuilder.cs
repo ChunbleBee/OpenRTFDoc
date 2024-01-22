@@ -30,16 +30,17 @@ public static class DomBuilder
 
             if (token is IString str)
             {
-                prev.InnerText = str.Convert(((FontAttribute)prev.GetAttribute("Font")).Value.Encoding);
+                n = new(doc, current)
+                {
+                    InnerText = str.Convert(((FontAttribute)prev.GetAttribute("Font")).Value.Encoding)
+                };
+
                 Console.WriteLine($"IString Token, Value: {prev.InnerText}");
             }
             else if (token is IFormat fmtr)
             {
                 Console.WriteLine("IFormat Token");
-                n = new(doc, current);
                 options.Add(IFormatOption.FromFormatWord(fmtr));
-                options.Apply(ref n);
-                options.Clear();
             }
             else if (token is Group grp)
             {
@@ -68,8 +69,8 @@ public static class DomBuilder
 
             if (n != null)
             {
-                Console.WriteLine("heeeerrrrrreeeee");
                 current.Children.Add(n);
+                prev = n;
             }
             Console.WriteLine($"Prev Node: {prev}");
         }

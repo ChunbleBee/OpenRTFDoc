@@ -47,7 +47,8 @@ public class Node(DocumentNode? doc = null, Node? parent = null) : IEnumerator<N
     /// </summary>
     internal Dictionary<string, DomAttribute> Attributes { get; set; } = [];
 
-    object IEnumerator.Current => throw new NotImplementedException();
+    /// <inheritdoc/>
+    object IEnumerator.Current => Current;
 
     private int index = 0;
 
@@ -113,6 +114,7 @@ public class Node(DocumentNode? doc = null, Node? parent = null) : IEnumerator<N
 
         foreach (Node n in Parent.Children)
         {
+            if (n == this) break;
             n.Attributes.TryGetValue(attrName, out attr);
         }
 
