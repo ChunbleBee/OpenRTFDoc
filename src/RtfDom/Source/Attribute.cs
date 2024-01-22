@@ -4,6 +4,26 @@ using System.Drawing;
 using RtfModels;
 
 /// <summary>
+/// LineStyleType defines how a line, such as paragraph borders or underlining should be displayed.
+/// </summary>
+[Flags]
+public enum LineStyleType
+{
+    Filled = 0b0,
+    Dot = 0b1,
+    DotDot = 0b10,
+    Dash = 0b100,
+    Hairline = 0b1000,
+    Wave = 0b10000,
+    Long = 0b100000,
+    Thick = 0b1000000,
+    Double = 0b10000000,
+    Word = 0b100000000,
+    DashDot = Dot | Dash,
+    DashDotDot = DotDot | Dash,
+}
+
+/// <summary>
 /// DomAttribute describes some attribute that a node may have.
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="DomAttribute"/> class.</remark>
@@ -146,11 +166,11 @@ public class ItalicsAttribute(bool on) : DomAttribute("Italics"), IFormatOption
 }
 
 /// <summary>
-/// UnderlinedAttribute defines the bold value of the node.
+/// UnderlineAttribute defines the bold value of the node.
 /// </summary>
-/// <remarks>Initializes a new instance of the <see cref="UnderlinedAttribute"/> class.</remark>
+/// <remarks>Initializes a new instance of the <see cref="UnderlineAttribute"/> class.</remark>
 /// <param name="on">True if the next run of text should be underlined, false otherwise.</param>
-public class UnderlinedAttribute(bool on) : DomAttribute("Underlined"), IFormatOption
+public class UnderlineAttribute(bool on, LineStyleType type = LineStyleType.Filled) : DomAttribute("Underlined"), IFormatOption
 {
     /// <summary>
     /// Gets a value indicating whether text underlining should be turned on.
@@ -160,13 +180,18 @@ public class UnderlinedAttribute(bool on) : DomAttribute("Underlined"), IFormatO
     /// <inheritdoc/>
     public FormatType Type { get; } = FormatType.Decorator;
 
+    /// <summary>
+    /// Gets the <see cref="RtfDom.LineStyleType"/> of this 
+    /// </summary>
+    public LineStyleType UnderlineType { get; } = type;
+
     /// <inheritdoc/>
     public bool Apply(ref Node node)
     {
         DomAttribute? attr = node.GetAttribute(Name);
-        if (attr != null && attr is UnderlinedAttribute other)
+        if (attr != null && attr is UnderlineAttribute other)
         {
-            if (other.Value == Value) return false;
+            if (other.Value == Value && other.UnderlineType == UnderlineType) return false;
         }
 
         node.Attributes[Name] = this;

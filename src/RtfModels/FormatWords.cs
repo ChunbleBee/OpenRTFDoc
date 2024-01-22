@@ -110,6 +110,8 @@ public class OutlineWord(string? param = null) : FormattingBinaryToggleWord(Form
 public class CapitalsLockWord(string? param = null) : FormattingBinaryToggleWord(FormatType.Decorator, "caps", param) { }
 public class LowersLockWord(string? param = null) : FormattingBinaryToggleWord(FormatType.Decorator, "scaps", param) { }
 public class VisibilityWord(string? param = null) : FormattingBinaryToggleWord(FormatType.Decorator, "v", param) { }
+
+// Underline control words
 public class UnderlineWord(string? param = null) : FormattingBinaryToggleWord(FormatType.Decorator, "ul", param) { }
 public class DotUnderlineWord(string? param = null) : FormattingBinaryToggleWord(FormatType.Decorator, "uld", param) { }
 public class DashUnderlineWord(string? param = null) : FormattingBinaryToggleWord(FormatType.Decorator, "uldash", param) { }
